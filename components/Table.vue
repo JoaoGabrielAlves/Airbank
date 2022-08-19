@@ -42,6 +42,10 @@
 <script lang="ts">
 export default {
   name: 'Table',
-  props: ['title', 'description', 'name'],
+  props: {
+    title: String,
+    description: String,
+    name: String,
+  },
 }
 </script>
