@@ -1,9 +1,9 @@
 <template>
   <td
     :class="isFirst ? 'pl-4 pr-3 sm:pl-6' : 'px-3'"
-    class="whitespace-nowrap text-sm text-gray-900"
+    class="whitespace-nowrap py-4 text-sm text-gray-900"
   >
-    {{ title }}
+    {{ content }}
   </td>
 </template>
 
@@ -11,7 +11,7 @@
 export default {
   name: 'TableColumn',
   props: {
-    title: String,
+    content: String,
     isFirst: {
       default: false,
       type: Boolean,
