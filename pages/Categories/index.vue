@@ -1,5 +1,7 @@
 <template>
   <Table title="Categories" description="List of categories" name="category">
+    <template slot="header"> </template>
+    <template slot="body"> </template>
   </Table>
 </template>
 

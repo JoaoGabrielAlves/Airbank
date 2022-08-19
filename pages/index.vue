@@ -4,6 +4,8 @@
     description="List of transactions"
     name="transaction"
   >
+    <template slot="header"> </template>
+    <template slot="body"> </template>
   </Table>
 </template>
 

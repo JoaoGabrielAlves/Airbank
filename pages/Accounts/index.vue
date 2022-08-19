@@ -1,5 +1,7 @@
 <template>
   <Table title="Accounts" description="List of accounts" name="account">
+    <template slot="header"> </template>
+    <template slot="body"> </template>
   </Table>
 </template>
 

@@ -21,7 +21,16 @@
             class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg"
           >
             <table class="min-w-full divide-y divide-gray-300">
-              <slot></slot>
+              <thead class="bg-gray-50">
+                <tr>
+                  <slot name="header"></slot>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200 bg-white">
+                <tr>
+                  <slot name="body"></slot>
+                </tr>
+              </tbody>
             </table>
           </div>
         </div>
