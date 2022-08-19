@@ -1,7 +1,10 @@
 <template>
-  <div>
-    <h1 class="text-4xl">Transactions</h1>
-  </div>
+  <Table
+    title="Transactions"
+    description="List of transactions"
+    name="transaction"
+  >
+  </Table>
 </template>
 
 <script lang="ts">

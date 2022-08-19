@@ -1,7 +1,6 @@
 <template>
-  <div>
-    <h1 class="text-4xl">Categories</h1>
-  </div>
+  <Table title="Categories" description="List of categories" name="category">
+  </Table>
 </template>
 
 <script lang="ts">
