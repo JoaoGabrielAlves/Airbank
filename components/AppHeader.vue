@@ -72,3 +72,8 @@ export default {
   name: 'AppHeader',
 }
 </script>
+<style>
+a.nuxt-link-exact-active {
+  font-weight: bold;
+}
+</style>
