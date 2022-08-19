@@ -26,10 +26,10 @@
                   <slot name="header"></slot>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-gray-200 bg-white">
-                <tr>
-                  <slot name="body"></slot>
-                </tr>
+              <tbody
+                class="divide-y divide-gray-200 bg-white cursor-pointer hover:bg-gray-50"
+              >
+                <slot name="body"></slot>
               </tbody>
             </table>
           </div>
