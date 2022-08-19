@@ -12,7 +12,10 @@ export default {
   name: 'TableColumn',
   props: {
     title: String,
-    isFirst: Boolean,
+    isFirst: {
+      default: false,
+      type: Boolean,
+    },
   },
 }
 </script>

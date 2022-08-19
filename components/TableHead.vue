@@ -13,7 +13,10 @@ export default {
   name: 'TableHead',
   props: {
     title: String,
-    isFirst: Boolean,
+    isFirst: {
+      default: false,
+      type: Boolean,
+    },
   },
 }
 </script>
