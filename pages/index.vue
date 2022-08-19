@@ -1,11 +1,22 @@
 <template>
-  <Tutorial />
+  <div>
+    <h1>Transactions</h1>
+  </div>
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
-
-export default Vue.extend({
-  name: 'IndexPage',
-})
+export default {
+  head() {
+    return {
+      title: 'Transactions',
+      meta: [
+        {
+          hid: 'description',
+          name: 'description',
+          content: 'List of transactions',
+        },
+      ],
+    }
+  },
+}
 </script>
