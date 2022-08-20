@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id          String        @id
+  name        String
+  bank        String
+  Transaction Transaction[]
+}
+
+model Category {
+  id          String        @id
+  name        String
+  color       String
+  Transaction Transaction[]
+}
+
+model Transaction {
+  id         String   @id
+  accountId  String
+  categoryId String
+  reference  String?
+  amount     Float
+  currency   String
+  date       DateTime
+  Account    Account  @relation(fields: [accountId], references: [id])
+  Category   Category @relation(fields: [categoryId], references: [id])
+
+  @@index([date, accountId, categoryId])
+}
