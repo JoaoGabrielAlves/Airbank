@@ -18,15 +18,17 @@ model Category {
   id          String        @id @unique
   name        String
   color       String?
+  Transaction Transaction[]
 }
 
 model Transaction {
-  id         String   @id @unique
+  id         String    @id @unique
   accountId  String
-  categoryId String
+  categoryId String?
   reference  String?
   amount     Decimal
   currency   String
   date       String
-  Account    Account  @relation(fields: [accountId], references: [id])
+  Account    Account   @relation(fields: [accountId], references: [id])
+  Category   Category? @relation(fields: [categoryId], references: [id])
 }

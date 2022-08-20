@@ -20,7 +20,7 @@ interface Account {
 interface Transaction {
   id: string
   accountId: string
-  categoryId: string
+  categoryId: string | null
   reference: string
   amount: string
   currency: string
@@ -83,7 +83,12 @@ function transactions() {
         skipLines: 1,
       })
     )
-    .on('data', (data: Transaction) => finalData.push(data))
+    .on('data', (data: Transaction) =>
+      finalData.push({
+        ...data,
+        categoryId: data.categoryId ? data.categoryId : null,
+      })
+    )
     .on('end', () => {
       createTransactions(finalData)
         .catch((e) => {

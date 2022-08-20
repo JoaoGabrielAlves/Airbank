@@ -20,7 +20,7 @@ CREATE TABLE "Category" (
 CREATE TABLE "Transaction" (
     "id" TEXT NOT NULL,
     "accountId" TEXT NOT NULL,
-    "categoryId" TEXT NOT NULL,
+    "categoryId" TEXT,
     "reference" TEXT,
     "amount" DECIMAL(65,30) NOT NULL,
     "currency" TEXT NOT NULL,
@@ -40,3 +40,6 @@ CREATE UNIQUE INDEX "Transaction_id_key" ON "Transaction"("id");
 
 -- AddForeignKey
 ALTER TABLE "Transaction" ADD CONSTRAINT "Transaction_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "Account"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Transaction" ADD CONSTRAINT "Transaction_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "Category"("id") ON DELETE SET NULL ON UPDATE CASCADE;
