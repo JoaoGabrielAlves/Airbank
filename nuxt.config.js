@@ -43,11 +43,7 @@ export default {
 
   apollo: {
     clientConfigs: {
-      default: '~/graphql',
+      default: '~/graphql/index.ts',
     },
-  },
-
-  env: {
-    nuxtApiUrl: process.env.NUXT_API_URL,
   },
 }

@@ -15,6 +15,7 @@
         v-for="transaction in allTransactions"
         :key="transaction.id"
         class="cursor-pointer hover:bg-gray-50"
+        @click="view(transaction.id)"
       >
         <TableColumn :isFirst="true">
           <span v-if="transaction.reference">
@@ -49,10 +50,11 @@
 </template>
 
 <script lang="ts">
+import Vue from 'vue'
 import gql from 'graphql-tag'
 import Badge from '~/components/Badge.vue'
 
-export default {
+export default Vue.extend({
   head() {
     return {
       title: 'Transactions',
@@ -67,7 +69,7 @@ export default {
   },
   methods: {
     view(id: number) {
-      window.location.href = `transactions/${id}`
+      this.$router.push(`/transactions/${id}`)
     },
   },
   apollo: {
@@ -88,5 +90,5 @@ export default {
     `,
   },
   components: { Badge },
-}
+})
 </script>

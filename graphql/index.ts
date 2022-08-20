@@ -11,7 +11,7 @@ export default () => {
     }
   })
   const httpLink = new HttpLink({
-    uri: process.env.NUXT_API_URL,
+    uri: 'http://localhost:3000/graphql',
     credentials: 'include',
   })
   const link = from([ssrMiddleware, httpLink])
