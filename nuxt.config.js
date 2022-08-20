@@ -32,8 +32,22 @@ export default {
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
-  modules: [],
+  modules: ['@nuxtjs/apollo'],
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {},
+  /*
+   ** Server middlewares
+   */
+  serverMiddleware: [{ path: '/', handler: '~/server/index.ts' }],
+
+  apollo: {
+    clientConfigs: {
+      default: '~/graphql',
+    },
+  },
+
+  env: {
+    nuxtApiUrl: process.env.NUXT_API_URL,
+  },
 }
