@@ -8,29 +8,25 @@ datasource db {
 }
 
 model Account {
-  id          String        @id
+  id          String        @id @unique
   name        String
   bank        String
   Transaction Transaction[]
 }
 
 model Category {
-  id          String        @id
+  id          String        @id @unique
   name        String
-  color       String
-  Transaction Transaction[]
+  color       String?
 }
 
 model Transaction {
-  id         String   @id
+  id         String   @id @unique
   accountId  String
   categoryId String
   reference  String?
-  amount     Float
+  amount     Decimal
   currency   String
-  date       DateTime
+  date       String
   Account    Account  @relation(fields: [accountId], references: [id])
-  Category   Category @relation(fields: [categoryId], references: [id])
-
-  @@index([date, accountId, categoryId])
 }
