@@ -14,7 +14,9 @@
           {{ category.name }}
         </TableColumn>
         <TableColumn>
-          <Badge v-if="category.color" :color="category.color" />
+          <Badge v-if="category.color" :color="category.color">
+            {{ category.color }}
+          </Badge>
         </TableColumn>
       </tr>
     </template>
