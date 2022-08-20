@@ -4,8 +4,20 @@
     description="List of transactions"
     name="transaction"
   >
-    <template slot="header"> </template>
-    <template slot="body"> </template>
+    <template slot="header">
+      <TableHead title="Reference" :isFirst="false" />
+      <TableHead title="Category" />
+      <TableHead title="Date" />
+      <TableHead title="Amount" />
+    </template>
+    <template slot="body">
+      <tr @click="view(1)">
+        <TableColumn content="Reconcialitory Couche Airing" />
+        <TableColumn content="Category" />
+        <TableColumn content="14/04/22" />
+        <TableColumn aumount="458.00 GBP" />
+      </tr>
+    </template>
   </Table>
 </template>
 
@@ -22,6 +34,11 @@ export default {
         },
       ],
     }
+  },
+  methods: {
+    view(id: number) {
+      window.location.href = `transactions/${id}`
+    },
   },
 }
 </script>
