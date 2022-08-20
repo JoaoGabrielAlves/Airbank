@@ -14,6 +14,14 @@ const resolvers = {
         take: 10,
       })
     },
+    allTransactions: (_parent: any, _args: any) => {
+      return prisma.transaction.findMany({
+        take: 10,
+        include: {
+          Category: true,
+        },
+      })
+    },
   },
 }
 

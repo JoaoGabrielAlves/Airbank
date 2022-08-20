@@ -4,6 +4,7 @@ const typeDefs = gql`
   type Query {
     allAccounts: [Account!]!
     allCategories: [Category!]!
+    allTransactions: [Transaction!]!
   }
 
   type Account {
@@ -16,6 +17,15 @@ const typeDefs = gql`
     id: String!
     name: String!
     color: String
+  }
+
+  type Transaction {
+    id: String!
+    reference: String
+    date: String!
+    amount: String!
+    currency: String!
+    Category: Category
   }
 `
 
