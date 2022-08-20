@@ -6,7 +6,11 @@ const resolvers = {
   Query: {
     allAccounts: (_parent: any, _args: any) => {
       return prisma.account.findMany({
-        skip: 10,
+        take: 10,
+      })
+    },
+    allCategories: (_parent: any, _args: any) => {
+      return prisma.category.findMany({
         take: 10,
       })
     },

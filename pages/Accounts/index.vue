@@ -11,8 +11,12 @@
           v-for="account in allAccounts"
           :key="account.id"
         >
-          <TableColumn :content="account.name" :isFirst="true" />
-          <TableColumn :content="account.bank" />
+          <TableColumn :isFirst="true">
+            {{ account.name }}
+          </TableColumn>
+          <TableColumn>
+            {{ account.bank }}
+          </TableColumn>
         </tr>
       </template>
     </Table>
