@@ -45,7 +45,10 @@
         </div>
       </div>
       <div class="py-4 flex flex-wrap justify-center space-x-6 lg:hidden">
-        <nuxt-link to="/" class="text-base text-gray-500 hover:text-gray-900">
+        <nuxt-link
+          to="/transactions"
+          class="text-base text-gray-500 hover:text-gray-900"
+        >
           Transactions
         </nuxt-link>
 

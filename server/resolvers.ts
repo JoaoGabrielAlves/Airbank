@@ -199,6 +199,17 @@ const resolvers = {
         },
       })
     },
+    transactionById: async (_parent: Object, _args: { id: string }) => {
+      return await prisma.transaction.findUnique({
+        where: {
+          id: _args.id,
+        },
+        include: {
+          Category: true,
+          Account: true,
+        },
+      })
+    },
   },
 }
 

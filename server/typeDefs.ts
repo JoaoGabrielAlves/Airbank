@@ -8,6 +8,7 @@ const typeDefs = gql`
     accountsCount: Count
     categoriesCount: Count
     transactionsCount: Count
+    transactionById(id: String!): Transaction
   }
 
   type Account {
@@ -29,6 +30,7 @@ const typeDefs = gql`
     amount: Float!
     currency: String!
     Category: Category
+    Account: Account
   }
 
   type PageInfo {
