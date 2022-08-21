@@ -34,7 +34,6 @@
 <script lang="ts">
 import Vue from 'vue'
 import gql from 'graphql-tag'
-import Badge from '~/components/Badge.vue'
 
 export default Vue.extend({
   head() {
