@@ -1,6 +1,9 @@
 <template>
   <div>
-    <Table title="Accounts" description="List of accounts" name="account">
+    <Table
+      title="Accounts"
+      description="List of accounts including their name and bank"
+    >
       <template slot="header">
         <TableHead title="Name" :isFirst="true" />
         <TableHead title="Bank" />
@@ -9,7 +12,7 @@
         <tr
           class="cursor-pointer hover:bg-gray-50"
           v-for="account in paginatedAccounts?.edges"
-          :key="account.id"
+          :key="account.node.id"
         >
           <TableColumn :isFirst="true">
             {{ account.node.name }}
@@ -32,6 +35,18 @@ import TableHead from '~/components/TableHead.vue'
 import Pagination from '~/components/Pagination.vue'
 
 export default Vue.extend({
+  head() {
+    return {
+      title: 'Accounts',
+      meta: [
+        {
+          hid: 'description',
+          name: 'description',
+          content: 'List of accounts',
+        },
+      ],
+    }
+  },
   data: () => ({
     page: 0,
   }),
