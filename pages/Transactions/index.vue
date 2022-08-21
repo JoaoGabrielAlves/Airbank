@@ -39,19 +39,11 @@
             {{ formatDate(new Date(transaction.node.date)) }}
           </TableColumn>
           <TableColumn>
-            <div class="flex justify-between items-center">
-              <span>
-                {{
-                  (Math.round(transaction.node.amount * 100) / 100)
-                    .toFixed(2)
-                    .toString()
-                    .replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-                }}
-              </span>
-              <span class="text-xs text-gray-400">
-                {{ transaction.node.currency }}
-              </span>
-            </div>
+            <Amount
+              containerClass="flex justify-between items-center"
+              :amount="transaction?.node.amount"
+              :currency="transaction?.node.currency"
+            />
           </TableColumn>
         </tr>
       </template>

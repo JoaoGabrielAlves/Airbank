@@ -14,17 +14,10 @@
       {{ formatDate(new Date(transactionById?.date)) }}
     </DetailsSection>
     <DetailsSection title="Amount">
-      <span>
-        {{
-          (Math.round(transactionById?.amount * 100) / 100)
-            .toFixed(2)
-            .toString()
-            .replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-        }}
-      </span>
-      <span class="text-xs text-gray-400">
-        {{ transactionById?.currency }}
-      </span>
+      <Amount
+        :amount="transactionById?.amount"
+        :currency="transactionById?.currency"
+      />
     </DetailsSection>
     <DetailsSection title="Category">
       <Badge :color="transactionById?.Category?.color">
