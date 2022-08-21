@@ -1,15 +1,18 @@
 <template>
   <div>
-    <Table title="Categories" description="List of categories" name="category">
+    <Table
+      title="Categories"
+      description="List of categories including their name and color"
+    >
       <template slot="header">
-        <TableHead title="Name" :isFirst="false" />
+        <TableHead title="Name" :isFirst="true" />
         <TableHead title="Color" />
       </template>
       <template slot="body">
         <tr
           class="cursor-pointer hover:bg-gray-50"
           v-for="category in paginatedCategories?.edges"
-          :key="category.id"
+          :key="category.node.id"
         >
           <TableColumn :isFirst="true">
             {{ category.node.name }}
