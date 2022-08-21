@@ -23,7 +23,7 @@ const typeDefs = gql`
     id: String!
     reference: String
     date: String!
-    amount: String!
+    amount: Float!
     currency: String!
     Category: Category
   }
