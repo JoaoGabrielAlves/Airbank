@@ -5,6 +5,9 @@ const typeDefs = gql`
     paginatedAccounts(first: Int, after: String): AccountResponse
     paginatedCategories(first: Int, after: String): CategoryResponse
     paginatedTransactions(first: Int, after: String): TransactionResponse
+    accountsCount: Count
+    categoriesCount: Count
+    transactionsCount: Count
   }
 
   type Account {
@@ -61,6 +64,10 @@ const typeDefs = gql`
   type TransactionResponse {
     pageInfo: PageInfo
     edges: [TransactionEdge]
+  }
+
+  type Count {
+    _all: Int!
   }
 `
 

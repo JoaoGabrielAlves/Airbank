@@ -6,7 +6,7 @@
           Total Transactions
         </dt>
         <dd class="mt-1 text-3xl tracking-tight font-semibold text-gray-900">
-          42003951
+          {{ transactionsCount?._all }}
         </dd>
       </div>
 
@@ -15,7 +15,7 @@
           Total Categories
         </dt>
         <dd class="mt-1 text-3xl tracking-tight font-semibold text-gray-900">
-          25
+          {{ categoriesCount?._all }}
         </dd>
       </div>
 
@@ -24,7 +24,7 @@
           Total accounts
         </dt>
         <dd class="mt-1 text-3xl tracking-tight font-semibold text-gray-900">
-          25
+          {{ accountsCount?._all }}
         </dd>
       </div>
     </dl>
@@ -47,6 +47,29 @@ export default Vue.extend({
         },
       ],
     }
+  },
+  apollo: {
+    accountsCount: gql`
+      query {
+        accountsCount {
+          _all
+        }
+      }
+    `,
+    categoriesCount: gql`
+      query {
+        categoriesCount {
+          _all
+        }
+      }
+    `,
+    transactionsCount: gql`
+      query {
+        transactionsCount {
+          _all
+        }
+      }
+    `,
   },
 })
 </script>

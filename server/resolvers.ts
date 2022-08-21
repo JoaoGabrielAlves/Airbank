@@ -178,6 +178,27 @@ const resolvers = {
         }
       }
     },
+    accountsCount: async (_parent: Object, _args: {}) => {
+      return await prisma.account.count({
+        select: {
+          _all: true,
+        },
+      })
+    },
+    categoriesCount: async (_parent: Object, _args: {}) => {
+      return await prisma.category.count({
+        select: {
+          _all: true,
+        },
+      })
+    },
+    transactionsCount: async (_parent: Object, _args: {}) => {
+      return await prisma.transaction.count({
+        select: {
+          _all: true,
+        },
+      })
+    },
   },
 }
 
