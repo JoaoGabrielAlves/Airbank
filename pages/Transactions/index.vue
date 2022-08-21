@@ -2,7 +2,7 @@
   <div>
     <Table
       title="Transactions"
-      description="List of transactions including their reference, category, dat and amount"
+      description="List of transactions including their reference, category, date and amount"
     >
       <template slot="header">
         <TableHead title="Reference" :isFirst="true" />
