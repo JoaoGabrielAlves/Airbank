@@ -6,6 +6,9 @@
         <p class="mt-2 text-sm text-gray-700">{{ description }}</p>
       </div>
     </div>
+    <div class="mt-8">
+      <slot name="filters"></slot>
+    </div>
     <div class="mt-8 flex flex-col">
       <div class="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
         <div class="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">

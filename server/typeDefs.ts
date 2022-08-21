@@ -4,7 +4,11 @@ const typeDefs = gql`
   type Query {
     paginatedAccounts(first: Int, after: String): AccountResponse
     paginatedCategories(first: Int, after: String): CategoryResponse
-    paginatedTransactions(first: Int, after: String): TransactionResponse
+    paginatedTransactions(
+      first: Int
+      after: String
+      search: String
+    ): TransactionResponse
     accountsCount: Count
     categoriesCount: Count
     transactionsCount: Count

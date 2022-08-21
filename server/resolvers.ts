@@ -116,7 +116,7 @@ const resolvers = {
     },
     paginatedTransactions: async (
       _parent: Object,
-      _args: { first: number; after: string }
+      _args: { first: number; after: string; search: string }
     ) => {
       let queryResults = null
 
@@ -130,12 +130,108 @@ const resolvers = {
           include: {
             Category: true,
           },
+          where: {
+            OR: [
+              {
+                reference: {
+                  startsWith: _args.search,
+                  mode: 'insensitive',
+                },
+              },
+              {
+                date: {
+                  startsWith: _args.search,
+                  mode: 'insensitive',
+                },
+              },
+              {
+                amount: {
+                  startsWith: _args.search,
+                  mode: 'insensitive',
+                },
+              },
+              {
+                currency: {
+                  startsWith: _args.search,
+                  mode: 'insensitive',
+                },
+              },
+              {
+                Category: {
+                  name: {
+                    startsWith: _args.search,
+                    mode: 'insensitive',
+                  },
+                },
+              },
+              {
+                Account: {
+                  bank: {
+                    startsWith: _args.search,
+                    mode: 'insensitive',
+                  },
+                  name: {
+                    startsWith: _args.search,
+                    mode: 'insensitive',
+                  },
+                },
+              },
+            ],
+          },
         })
       } else {
         queryResults = await prisma.transaction.findMany({
           take: _args.first,
           include: {
             Category: true,
+          },
+          where: {
+            OR: [
+              {
+                reference: {
+                  startsWith: _args.search,
+                  mode: 'insensitive',
+                },
+              },
+              {
+                date: {
+                  startsWith: _args.search,
+                  mode: 'insensitive',
+                },
+              },
+              {
+                amount: {
+                  startsWith: _args.search,
+                  mode: 'insensitive',
+                },
+              },
+              {
+                currency: {
+                  startsWith: _args.search,
+                  mode: 'insensitive',
+                },
+              },
+              {
+                Category: {
+                  name: {
+                    startsWith: _args.search,
+                    mode: 'insensitive',
+                  },
+                },
+              },
+              {
+                Account: {
+                  bank: {
+                    startsWith: _args.search,
+                    mode: 'insensitive',
+                  },
+                  name: {
+                    startsWith: _args.search,
+                    mode: 'insensitive',
+                  },
+                },
+              },
+            ],
           },
         })
       }
@@ -152,6 +248,54 @@ const resolvers = {
           },
           include: {
             Category: true,
+          },
+          where: {
+            OR: [
+              {
+                reference: {
+                  startsWith: _args.search,
+                  mode: 'insensitive',
+                },
+              },
+              {
+                date: {
+                  startsWith: _args.search,
+                  mode: 'insensitive',
+                },
+              },
+              {
+                amount: {
+                  startsWith: _args.search,
+                  mode: 'insensitive',
+                },
+              },
+              {
+                currency: {
+                  startsWith: _args.search,
+                  mode: 'insensitive',
+                },
+              },
+              {
+                Category: {
+                  name: {
+                    startsWith: _args.search,
+                    mode: 'insensitive',
+                  },
+                },
+              },
+              {
+                Account: {
+                  bank: {
+                    startsWith: _args.search,
+                    mode: 'insensitive',
+                  },
+                  name: {
+                    startsWith: _args.search,
+                    mode: 'insensitive',
+                  },
+                },
+              },
+            ],
           },
         })
 

@@ -26,7 +26,7 @@ model Transaction {
   accountId  String
   categoryId String?
   reference  String?
-  amount     Decimal
+  amount     String
   currency   String
   date       String
   Account    Account   @relation(fields: [accountId], references: [id])

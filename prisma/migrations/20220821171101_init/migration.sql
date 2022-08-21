@@ -22,7 +22,7 @@ CREATE TABLE "Transaction" (
     "accountId" TEXT NOT NULL,
     "categoryId" TEXT,
     "reference" TEXT,
-    "amount" DECIMAL(65,30) NOT NULL,
+    "amount" TEXT NOT NULL,
     "currency" TEXT NOT NULL,
     "date" TEXT NOT NULL,
 
