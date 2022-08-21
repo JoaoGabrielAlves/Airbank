@@ -20,18 +20,7 @@
         </tr>
       </template>
     </Table>
-    <div class="flex justify-center items-center py-6">
-      <button
-        type="button"
-        class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-        v-if="paginatedAccounts?.pageInfo.hasNextPage"
-        @click="showMore(paginatedAccounts.pageInfo.endCursor)"
-      >
-        Load more
-      </button>
-
-      <span v-else> You've reached the end! </span>
-    </div>
+    <Pagination :resource="paginatedAccounts" @showMore="showMore" />
   </div>
 </template>
 
@@ -40,6 +29,7 @@ import Vue from 'vue'
 import gql from 'graphql-tag'
 import TableColumn from '~/components/TableColumn.vue'
 import TableHead from '~/components/TableHead.vue'
+import Pagination from '~/components/Pagination.vue'
 
 export default Vue.extend({
   data: () => ({
@@ -89,6 +79,6 @@ export default Vue.extend({
       })
     },
   },
-  components: { TableColumn, TableHead },
+  components: { TableColumn, TableHead, Pagination },
 })
 </script>

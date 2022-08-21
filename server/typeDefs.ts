@@ -2,8 +2,8 @@ import { gql } from 'apollo-server-express'
 
 const typeDefs = gql`
   type Query {
-    paginatedAccounts(first: Int, after: String): Response
-    allCategories: [Category!]!
+    paginatedAccounts(first: Int, after: String): AccountResponse
+    paginatedCategories(first: Int, after: String): CategoryResponse
     allTransactions: [Transaction!]!
   }
 
@@ -28,19 +28,29 @@ const typeDefs = gql`
     Category: Category
   }
 
-  type Edge {
-    cursor: String
-    node: Account
-  }
-
   type PageInfo {
     endCursor: String
     hasNextPage: Boolean
   }
 
-  type Response {
+  type AccountEdge {
+    cursor: String
+    node: Account
+  }
+
+  type AccountResponse {
     pageInfo: PageInfo
-    edges: [Edge]
+    edges: [AccountEdge]
+  }
+
+  type CategoryEdge {
+    cursor: String
+    node: Category
+  }
+
+  type CategoryResponse {
+    pageInfo: PageInfo
+    edges: [CategoryEdge]
   }
 `
 
