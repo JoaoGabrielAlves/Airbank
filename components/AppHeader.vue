@@ -22,7 +22,7 @@
           </nuxt-link>
           <div class="hidden ml-10 space-x-8 lg:block">
             <nuxt-link
-              to="/"
+              to="/transactions"
               class="text-base text-gray-500 hover:text-gray-900"
             >
               Transactions
