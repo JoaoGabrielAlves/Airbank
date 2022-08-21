@@ -30,9 +30,6 @@
 <script lang="ts">
 import Vue from 'vue'
 import gql from 'graphql-tag'
-import TableColumn from '~/components/TableColumn.vue'
-import TableHead from '~/components/TableHead.vue'
-import Pagination from '~/components/Pagination.vue'
 
 export default Vue.extend({
   head() {
@@ -94,6 +91,5 @@ export default Vue.extend({
       })
     },
   },
-  components: { TableColumn, TableHead, Pagination },
 })
 </script>

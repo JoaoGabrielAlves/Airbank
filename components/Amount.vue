@@ -11,7 +11,7 @@
 
 <script lang="ts">
 export default {
-  name: 'Badge',
+  name: 'Amount',
   props: {
     amount: Number,
     currency: String,

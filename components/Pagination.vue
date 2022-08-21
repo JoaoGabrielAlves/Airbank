@@ -17,7 +17,7 @@
 import Vue from 'vue'
 
 export default Vue.extend({
-  name: 'Badge',
+  name: 'Pagination',
   props: {
     resource: Object,
   },

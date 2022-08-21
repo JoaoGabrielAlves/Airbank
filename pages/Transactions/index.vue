@@ -27,7 +27,7 @@
             </span>
           </TableColumn>
           <TableColumn>
-            <Badge :color="transaction.node.Category?.color" text="">
+            <Badge :color="transaction.node.Category?.color">
               {{
                 transaction.node.Category?.name
                   ? transaction.node.Category?.name
@@ -36,13 +36,13 @@
             </Badge>
           </TableColumn>
           <TableColumn>
-            {{ formatDate(new Date(transaction.node.date)) }}
+            <Date :date="transaction.node.date" />
           </TableColumn>
           <TableColumn>
             <Amount
               containerClass="flex justify-between items-center"
-              :amount="transaction?.node.amount"
-              :currency="transaction?.node.currency"
+              :amount="transaction.node.amount"
+              :currency="transaction.node.currency"
             />
           </TableColumn>
         </tr>
@@ -55,7 +55,6 @@
 <script lang="ts">
 import Vue from 'vue'
 import gql from 'graphql-tag'
-import Badge from '~/components/Badge.vue'
 
 export default Vue.extend({
   head() {
@@ -91,16 +90,6 @@ export default Vue.extend({
         },
       })
     },
-    formatDate(date: Date) {
-      return [
-        this.padTo2Digits(date.getDate()),
-        this.padTo2Digits(date.getMonth() + 1),
-        date.getFullYear().toString().slice(-2),
-      ].join('/')
-    },
-    padTo2Digits(num: number) {
-      return num.toString().padStart(2, '0')
-    },
   },
   apollo: {
     paginatedTransactions: {
@@ -133,6 +122,5 @@ export default Vue.extend({
       },
     },
   },
-  components: { Badge },
 })
 </script>

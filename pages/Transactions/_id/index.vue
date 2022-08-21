@@ -11,7 +11,7 @@
       <span v-else class="text-sm text-gray-500"> No reference provided </span>
     </DetailsSection>
     <DetailsSection title="Date">
-      {{ formatDate(new Date(transactionById?.date)) }}
+      <Date :date="transactionById?.date" />
     </DetailsSection>
     <DetailsSection title="Amount">
       <Amount
@@ -40,7 +40,6 @@
 <script lang="ts">
 import Vue from 'vue'
 import gql from 'graphql-tag'
-import DetailsSection from '~/components/DetailsSection.vue'
 
 export default Vue.extend({
   data() {
@@ -59,18 +58,6 @@ export default Vue.extend({
         },
       ],
     }
-  },
-  methods: {
-    formatDate(date: Date) {
-      return [
-        this.padTo2Digits(date.getDate()),
-        this.padTo2Digits(date.getMonth() + 1),
-        date.getFullYear().toString().slice(-2),
-      ].join('/')
-    },
-    padTo2Digits(num: number) {
-      return num.toString().padStart(2, '0')
-    },
   },
   apollo: {
     transactionById: {
@@ -100,6 +87,5 @@ export default Vue.extend({
       },
     },
   },
-  components: { DetailsSection },
 })
 </script>
