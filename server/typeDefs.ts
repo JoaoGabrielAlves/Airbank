@@ -4,7 +4,7 @@ const typeDefs = gql`
   type Query {
     paginatedAccounts(first: Int, after: String): AccountResponse
     paginatedCategories(first: Int, after: String): CategoryResponse
-    allTransactions: [Transaction!]!
+    paginatedTransactions(first: Int, after: String): TransactionResponse
   }
 
   type Account {
@@ -51,6 +51,16 @@ const typeDefs = gql`
   type CategoryResponse {
     pageInfo: PageInfo
     edges: [CategoryEdge]
+  }
+
+  type TransactionEdge {
+    cursor: String
+    node: Transaction
+  }
+
+  type TransactionResponse {
+    pageInfo: PageInfo
+    edges: [TransactionEdge]
   }
 `
 

@@ -114,13 +114,69 @@ const resolvers = {
         }
       }
     },
-    allTransactions: (_parent: Object, _args: {}) => {
-      return prisma.transaction.findMany({
-        take: 10,
-        include: {
-          Category: true,
-        },
-      })
+    paginatedTransactions: async (
+      _parent: Object,
+      _args: { first: number; after: string }
+    ) => {
+      let queryResults = null
+
+      if (_args.after) {
+        queryResults = await prisma.transaction.findMany({
+          take: _args.first,
+          skip: 1,
+          cursor: {
+            id: _args.after,
+          },
+          include: {
+            Category: true,
+          },
+        })
+      } else {
+        queryResults = await prisma.transaction.findMany({
+          take: _args.first,
+          include: {
+            Category: true,
+          },
+        })
+      }
+
+      if (queryResults.length > 0) {
+        const lastTransactionInResults = queryResults[queryResults.length - 1]
+
+        const endCursor = lastTransactionInResults.id
+
+        const secondQueryResults = await prisma.transaction.findMany({
+          take: _args.first,
+          cursor: {
+            id: endCursor,
+          },
+          include: {
+            Category: true,
+          },
+        })
+
+        const result = {
+          pageInfo: {
+            endCursor: endCursor,
+            hasNextPage: secondQueryResults.length >= _args.first,
+          },
+
+          edges: queryResults.map((transaction) => ({
+            cursor: transaction.id,
+            node: transaction,
+          })),
+        }
+
+        return result
+      } else {
+        return {
+          pageInfo: {
+            endCursor: null,
+            hasNextPage: false,
+          },
+          edges: [],
+        }
+      }
     },
   },
 }

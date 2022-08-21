@@ -1,52 +1,54 @@
 <template>
-  <Table
-    title="Transactions"
-    description="List of transactions"
-    name="transaction"
-  >
-    <template slot="header">
-      <TableHead title="Reference" :isFirst="false" />
-      <TableHead title="Category" />
-      <TableHead title="Date" />
-      <TableHead title="Amount" />
-    </template>
-    <template slot="body">
-      <tr
-        v-for="transaction in allTransactions"
-        :key="transaction.id"
-        class="cursor-pointer hover:bg-gray-50"
-        @click="view(transaction.id)"
-      >
-        <TableColumn :isFirst="true">
-          <span v-if="transaction.reference">
-            {{ transaction.reference }}
-          </span>
+  <div>
+    <Table
+      title="Transactions"
+      description="List of transactions including their reference, category, dat and amount"
+    >
+      <template slot="header">
+        <TableHead title="Reference" :isFirst="true" />
+        <TableHead title="Category" />
+        <TableHead title="Date" />
+        <TableHead title="Amount" />
+      </template>
+      <template slot="body">
+        <tr
+          v-for="transaction in paginatedTransactions?.edges"
+          :key="transaction.node.id"
+          class="cursor-pointer hover:bg-gray-50"
+          @click="view(transaction.node.id)"
+        >
+          <TableColumn :isFirst="true">
+            <span v-if="transaction.node.reference">
+              {{ transaction.node.reference }}
+            </span>
 
-          <span v-else class="text-sm text-gray-500">
-            No reference provided
-          </span>
-        </TableColumn>
-        <TableColumn>
-          <Badge :color="transaction.Category?.color" text="">
-            {{
-              transaction.Category?.name
-                ? transaction.Category?.name
-                : transaction.Category?.color
-            }}
-          </Badge>
-        </TableColumn>
-        <TableColumn>
-          {{ transaction.date }}
-        </TableColumn>
-        <TableColumn>
-          {{ transaction.amount }}
-          <span class="text-xs text-gray-400">
-            {{ transaction.currency }}
-          </span>
-        </TableColumn>
-      </tr>
-    </template>
-  </Table>
+            <span v-else class="text-sm text-gray-500">
+              No reference provided
+            </span>
+          </TableColumn>
+          <TableColumn>
+            <Badge :color="transaction.node.Category?.color" text="">
+              {{
+                transaction.node.Category?.name
+                  ? transaction.node.Category?.name
+                  : transaction.node.Category?.color
+              }}
+            </Badge>
+          </TableColumn>
+          <TableColumn>
+            {{ formatDate(new Date(transaction.node.date)) }}
+          </TableColumn>
+          <TableColumn>
+            {{ transaction.node.amount }}
+            <span class="text-xs text-gray-400">
+              {{ transaction.node.currency }}
+            </span>
+          </TableColumn>
+        </tr>
+      </template>
+    </Table>
+    <Pagination :resource="paginatedTransactions" @showMore="showMore" />
+  </div>
 </template>
 
 <script lang="ts">
@@ -71,23 +73,64 @@ export default Vue.extend({
     view(id: number) {
       this.$router.push(`/transactions/${id}`)
     },
+    showMore(endCursor: string) {
+      this.$apollo.queries.paginatedTransactions.fetchMore({
+        variables: {
+          linksAfter: endCursor,
+          previousEndCursor: endCursor,
+        },
+
+        updateQuery: (previousResult, { fetchMoreResult }) => {
+          fetchMoreResult.paginatedTransactions.edges = [
+            ...previousResult.paginatedTransactions.edges,
+            ...fetchMoreResult.paginatedTransactions.edges,
+          ]
+
+          return fetchMoreResult
+        },
+      })
+    },
+    formatDate(date: Date) {
+      return [
+        this.padTo2Digits(date.getDate()),
+        this.padTo2Digits(date.getMonth() + 1),
+        date.getFullYear().toString().slice(-2),
+      ].join('/')
+    },
+    padTo2Digits(num: number) {
+      return num.toString().padStart(2, '0')
+    },
   },
   apollo: {
-    allTransactions: gql`
-      query {
-        allTransactions {
-          id
-          reference
-          date
-          amount
-          currency
-          Category {
-            name
-            color
+    paginatedTransactions: {
+      query: gql`
+        query ($linksFirst: Int, $linksAfter: String) {
+          paginatedTransactions(first: $linksFirst, after: $linksAfter) {
+            pageInfo {
+              endCursor
+              hasNextPage
+            }
+            edges {
+              cursor
+              node {
+                id
+                reference
+                date
+                amount
+                currency
+                Category {
+                  name
+                  color
+                }
+              }
+            }
           }
         }
-      }
-    `,
+      `,
+      variables: {
+        linksFirst: 10,
+      },
+    },
   },
   components: { Badge },
 })
