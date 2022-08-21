@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
 }
 
 datasource db {
@@ -12,6 +13,9 @@ model Account {
   name        String
   bank        String
   Transaction Transaction[]
+
+  @@index(name)
+  @@index(bank)
 }
 
 model Category {
@@ -19,16 +23,21 @@ model Category {
   name        String
   color       String?
   Transaction Transaction[]
+
+  @@index(name)
 }
 
 model Transaction {
-  id         String    @id @unique
+  id         String                   @id @unique
   accountId  String
   categoryId String?
   reference  String?
   amount     String
   currency   String
   date       String
-  Account    Account   @relation(fields: [accountId], references: [id])
-  Category   Category? @relation(fields: [categoryId], references: [id])
+  Account    Account                  @relation(fields: [accountId], references: [id])
+  Category   Category?                @relation(fields: [categoryId], references: [id])
+
+  @@index([categoryId, accountId])
+  @@index([reference, amount, currency, date])
 }

@@ -116,9 +116,30 @@ const resolvers = {
     },
     paginatedTransactions: async (
       _parent: Object,
-      _args: { first: number; after: string; search: string }
+      _args: {
+        first: number
+        after: string
+        search: string
+        accountId: string
+        categoryId: string
+      }
     ) => {
       let queryResults = null
+
+      const tsquerySpecialChars = /[()|&:*!]/g
+
+      let search =
+        _args.search != ''
+          ? _args.search
+              .replace(tsquerySpecialChars, ' ')
+              .trim()
+              .split(/\s+/)
+              .join(' | ')
+          : undefined
+
+      let accountId = _args.accountId != '' ? _args.accountId : undefined
+
+      let categoryId = _args.categoryId != '' ? _args.categoryId : undefined
 
       if (_args.after) {
         queryResults = await prisma.transaction.findMany({
@@ -131,48 +152,43 @@ const resolvers = {
             Category: true,
           },
           where: {
+            accountId: accountId,
+            categoryId: categoryId,
             OR: [
               {
                 reference: {
-                  startsWith: _args.search,
-                  mode: 'insensitive',
+                  search: search,
                 },
               },
               {
                 date: {
-                  startsWith: _args.search,
-                  mode: 'insensitive',
+                  search: search,
                 },
               },
               {
                 amount: {
-                  startsWith: _args.search,
-                  mode: 'insensitive',
+                  search: search,
                 },
               },
               {
                 currency: {
-                  startsWith: _args.search,
-                  mode: 'insensitive',
+                  search: search,
                 },
               },
               {
                 Category: {
                   name: {
-                    startsWith: _args.search,
-                    mode: 'insensitive',
+                    search: search,
                   },
                 },
               },
               {
                 Account: {
                   bank: {
-                    startsWith: _args.search,
-                    mode: 'insensitive',
+                    search: search,
                   },
                   name: {
-                    startsWith: _args.search,
-                    mode: 'insensitive',
+                    search: search,
                   },
                 },
               },
@@ -186,48 +202,43 @@ const resolvers = {
             Category: true,
           },
           where: {
+            accountId: accountId,
+            categoryId: categoryId,
             OR: [
               {
                 reference: {
-                  startsWith: _args.search,
-                  mode: 'insensitive',
+                  search: search,
                 },
               },
               {
                 date: {
-                  startsWith: _args.search,
-                  mode: 'insensitive',
+                  search: search,
                 },
               },
               {
                 amount: {
-                  startsWith: _args.search,
-                  mode: 'insensitive',
+                  search: search,
                 },
               },
               {
                 currency: {
-                  startsWith: _args.search,
-                  mode: 'insensitive',
+                  search: search,
                 },
               },
               {
                 Category: {
                   name: {
-                    startsWith: _args.search,
-                    mode: 'insensitive',
+                    search: search,
                   },
                 },
               },
               {
                 Account: {
                   bank: {
-                    startsWith: _args.search,
-                    mode: 'insensitive',
+                    search: search,
                   },
                   name: {
-                    startsWith: _args.search,
-                    mode: 'insensitive',
+                    search: search,
                   },
                 },
               },
@@ -250,48 +261,43 @@ const resolvers = {
             Category: true,
           },
           where: {
+            accountId: accountId,
+            categoryId: categoryId,
             OR: [
               {
                 reference: {
-                  startsWith: _args.search,
-                  mode: 'insensitive',
+                  search: search,
                 },
               },
               {
                 date: {
-                  startsWith: _args.search,
-                  mode: 'insensitive',
+                  search: search,
                 },
               },
               {
                 amount: {
-                  startsWith: _args.search,
-                  mode: 'insensitive',
+                  search: search,
                 },
               },
               {
                 currency: {
-                  startsWith: _args.search,
-                  mode: 'insensitive',
+                  search: search,
                 },
               },
               {
                 Category: {
                   name: {
-                    startsWith: _args.search,
-                    mode: 'insensitive',
+                    search: search,
                   },
                 },
               },
               {
                 Account: {
                   bank: {
-                    startsWith: _args.search,
-                    mode: 'insensitive',
+                    search: search,
                   },
                   name: {
-                    startsWith: _args.search,
-                    mode: 'insensitive',
+                    search: search,
                   },
                 },
               },

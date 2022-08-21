@@ -33,10 +33,22 @@ CREATE TABLE "Transaction" (
 CREATE UNIQUE INDEX "Account_id_key" ON "Account"("id");
 
 -- CreateIndex
+CREATE INDEX "Account_name_idx" ON "Account"("name");
+
+-- CreateIndex
+CREATE INDEX "Account_bank_idx" ON "Account"("bank");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Category_id_key" ON "Category"("id");
 
 -- CreateIndex
+CREATE INDEX "Category_name_idx" ON "Category"("name");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Transaction_id_key" ON "Transaction"("id");
+
+-- CreateIndex
+CREATE INDEX "Transaction_categoryId_accountId_idx" ON "Transaction"("categoryId", "accountId");
 
 -- AddForeignKey
 ALTER TABLE "Transaction" ADD CONSTRAINT "Transaction_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "Account"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

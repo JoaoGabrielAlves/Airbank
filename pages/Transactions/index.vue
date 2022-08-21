@@ -5,25 +5,100 @@
       description="List of transactions including their reference, category, date and amount"
     >
       <template slot="filters">
-        <div class="flex sm:flex-row flex-col">
-          <div class="block relative">
-            <span
-              class="h-full absolute inset-y-0 left-0 flex items-center pl-2"
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div>
+            <label for="search" class="block text-sm font-medium text-gray-700"
+              >Search</label
             >
-              <svg
-                viewBox="0 0 24 24"
-                class="h-4 w-4 fill-current text-gray-500"
+            <div class="mt-1 relative rounded-md shadow-sm">
+              <span
+                class="h-full absolute inset-y-0 left-0 flex items-center pl-2"
               >
-                <path
-                  d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1114.32 4.906l5.387 5.387a1 1 0 01-1.414 1.414l-5.387-5.387A8 8 0 012 10z"
-                ></path>
-              </svg>
-            </span>
-            <input
-              v-model.lazy="search"
-              placeholder="Search"
-              class="appearance-none rounded-r rounded-l sm:rounded-l-none border border-gray-400 border-b block pl-8 pr-6 py-2 w-full bg-white text-sm placeholder-gray-400 text-gray-700 focus:bg-white focus:placeholder-gray-600 focus:text-gray-700 focus:outline-none"
-            />
+                <svg
+                  viewBox="0 0 24 24"
+                  class="h-4 w-4 fill-current text-gray-500"
+                >
+                  <path
+                    d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1114.32 4.906l5.387 5.387a1 1 0 01-1.414 1.414l-5.387-5.387A8 8 0 012 10z"
+                  ></path>
+                </svg>
+              </span>
+              <input
+                v-model.lazy="search"
+                placeholder="Search"
+                name="search"
+                id="search"
+                class="appearance-none rounded border border-gray-400 border-b block pl-8 pr-6 py-2 w-full bg-white text-sm placeholder-gray-400 text-gray-700 focus:bg-white focus:placeholder-gray-600 focus:text-gray-700 focus:outline-none"
+              />
+            </div>
+          </div>
+          <div>
+            <label
+              for="stating-month"
+              class="block text-sm font-medium text-gray-700"
+              >Account</label
+            >
+            <div class="mt-1 relative rounded-md shadow-sm">
+              <input
+                type="text"
+                name="stating-month"
+                id="stating-month"
+                class="appearance-none rounded border border-gray-400 border-b block pl-4 pr-6 py-2 w-full bg-white text-sm placeholder-gray-400 text-gray-700 focus:bg-white focus:placeholder-gray-600 focus:text-gray-700 focus:outline-none"
+                placeholder="yyyy-mm"
+              />
+              <div
+                class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div>
+            <label
+              for="stating-month"
+              class="block text-sm font-medium text-gray-700"
+              >Bank</label
+            >
+            <div class="mt-1 relative rounded-md shadow-sm">
+              <input
+                type="text"
+                name="stating-month"
+                id="stating-month"
+                class="appearance-none rounded border border-gray-400 border-b block pl-4 pr-6 py-2 w-full bg-white text-sm placeholder-gray-400 text-gray-700 focus:bg-white focus:placeholder-gray-600 focus:text-gray-700 focus:outline-none"
+                placeholder="yyyy-mm"
+              />
+              <div
+                class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+              </div>
+            </div>
           </div>
         </div>
       </template>
@@ -83,6 +158,8 @@ export default Vue.extend({
   data() {
     return {
       search: '',
+      selectedAccountId: '',
+      selectedCategoryId: '',
     }
   },
   head() {
@@ -105,6 +182,9 @@ export default Vue.extend({
       this.$apollo.queries.paginatedTransactions.fetchMore({
         variables: {
           linksAfter: endCursor,
+          search: this.search,
+          accountId: this.selectedAccountId,
+          categoryId: this.selectedCategoryId,
         },
 
         // @ts-ignore
@@ -124,6 +204,8 @@ export default Vue.extend({
           linksFirst: 10,
           linksAfter: '',
           search: this.search,
+          accountId: this.selectedAccountId,
+          categoryId: this.selectedCategoryId,
         },
 
         // @ts-ignore
@@ -141,11 +223,19 @@ export default Vue.extend({
   apollo: {
     paginatedTransactions: {
       query: gql`
-        query ($linksFirst: Int, $linksAfter: String, $search: String) {
+        query (
+          $linksFirst: Int
+          $linksAfter: String
+          $search: String
+          $accountId: String
+          $categoryId: String
+        ) {
           paginatedTransactions(
             first: $linksFirst
             after: $linksAfter
             search: $search
+            accountId: $accountId
+            categoryId: $categoryId
           ) {
             pageInfo {
               endCursor

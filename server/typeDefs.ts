@@ -8,6 +8,8 @@ const typeDefs = gql`
       first: Int
       after: String
       search: String
+      accountId: String
+      categoryId: String
     ): TransactionResponse
     accountsCount: Count
     categoriesCount: Count
