@@ -41,6 +41,14 @@
             @update="bankSearch = $event"
             @selected="bank = $event?.bank"
           />
+          <AutoComplete
+            name="Category"
+            :options="autocompleteCategory"
+            optionValueKey="name"
+            optionIdentifierKey="id"
+            @update="categorySearch = $event"
+            @selected="selectedCategoryId = $event?.id"
+          />
         </div>
       </template>
       <template slot="header">
@@ -101,7 +109,7 @@ export default Vue.extend({
       search: '',
       bankSearch: '',
       bank: '',
-      selectedAccountId: '',
+      categorySearch: '',
       selectedCategoryId: '',
     }
   },
@@ -126,6 +134,7 @@ export default Vue.extend({
         variables: {
           linksAfter: endCursor,
           search: this.search,
+          bank: this.bank,
           categoryId: this.selectedCategoryId,
         },
         // @ts-ignore
@@ -165,6 +174,18 @@ export default Vue.extend({
         },
       })
     },
+    reloadCategory() {
+      this.$apollo.queries.autocompleteCategory.fetchMore({
+        variables: {
+          search: this.categorySearch,
+        },
+
+        // @ts-ignore
+        updateQuery: (previousResult, { fetchMoreResult }) => {
+          return fetchMoreResult
+        },
+      })
+    },
   },
   watch: {
     search() {
@@ -173,7 +194,13 @@ export default Vue.extend({
     bankSearch() {
       this.reloadBanks()
     },
+    categorySearch() {
+      this.reloadCategory()
+    },
     bank() {
+      this.applyFilters()
+    },
+    selectedCategoryId() {
       this.applyFilters()
     },
   },
@@ -225,6 +252,19 @@ export default Vue.extend({
         query ($search: String) {
           autocompleteAccountBanks(search: $search) {
             bank
+          }
+        }
+      `,
+      variables: {
+        search: '',
+      },
+    },
+    autocompleteCategory: {
+      query: gql`
+        query ($search: String) {
+          autocompleteCategory(search: $search) {
+            id
+            name
           }
         }
       `,

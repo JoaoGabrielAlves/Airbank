@@ -130,7 +130,7 @@ export default Vue.extend({
         this.showList = true
       }
 
-      if (this.search) {
+      if (!this.search) {
         this.$emit('selected', '')
       }
     },

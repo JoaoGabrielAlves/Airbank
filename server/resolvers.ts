@@ -153,10 +153,6 @@ const resolvers = {
             Category: true,
           },
           where: {
-            categoryId: categoryId,
-            Account: {
-              bank: bank,
-            },
             OR: [
               {
                 reference: {
@@ -196,6 +192,12 @@ const resolvers = {
                 },
               },
             ],
+            AND: {
+              categoryId: categoryId,
+              Account: {
+                bank: bank,
+              },
+            },
           },
         })
       } else {
@@ -205,10 +207,6 @@ const resolvers = {
             Category: true,
           },
           where: {
-            categoryId: categoryId,
-            Account: {
-              bank: bank,
-            },
             OR: [
               {
                 reference: {
@@ -248,6 +246,12 @@ const resolvers = {
                 },
               },
             ],
+            AND: {
+              categoryId: categoryId,
+              Account: {
+                bank: bank,
+              },
+            },
           },
         })
       }
@@ -266,10 +270,6 @@ const resolvers = {
             Category: true,
           },
           where: {
-            categoryId: categoryId,
-            Account: {
-              bank: bank,
-            },
             OR: [
               {
                 reference: {
@@ -309,6 +309,12 @@ const resolvers = {
                 },
               },
             ],
+            AND: {
+              categoryId: categoryId,
+              Account: {
+                bank: bank,
+              },
+            },
           },
         })
 
@@ -382,6 +388,22 @@ const resolvers = {
           },
         },
         distinct: ['bank'],
+      })
+    },
+    autocompleteCategory: async (
+      _parent: Object,
+      _args: { search: string }
+    ) => {
+      if (!_args.search) {
+        return []
+      }
+
+      return prisma.category.findMany({
+        where: {
+          name: {
+            startsWith: _args.search,
+          },
+        },
       })
     },
   },

@@ -12,6 +12,7 @@ const typeDefs = gql`
       categoryId: String
     ): TransactionResponse
     autocompleteAccountBanks(search: String): [Account]
+    autocompleteCategory(search: String): [Category]
     accountsCount: Count
     categoriesCount: Count
     transactionsCount: Count
