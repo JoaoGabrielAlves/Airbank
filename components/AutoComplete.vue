@@ -144,7 +144,7 @@ export default Vue.extend({
   watch: {
     search() {
       if (this.search != this.selectedValue) {
-        this.$emit('update', this.search)
+        this.$emit('change', this.search)
 
         if (!this.options?.length) {
           this.selectedOption = ''
