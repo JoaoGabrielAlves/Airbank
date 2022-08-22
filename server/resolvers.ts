@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client'
+import { type } from 'os'
 
 const prisma = new PrismaClient()
 
@@ -120,7 +121,7 @@ const resolvers = {
         first: number
         after: string
         search: string
-        accountId: string
+        bank: string
         categoryId: string
       }
     ) => {
@@ -137,9 +138,9 @@ const resolvers = {
               .join(' | ')
           : undefined
 
-      let accountId = _args.accountId != '' ? _args.accountId : undefined
-
       let categoryId = _args.categoryId != '' ? _args.categoryId : undefined
+
+      let bank = _args.bank != '' ? _args.bank : undefined
 
       if (_args.after) {
         queryResults = await prisma.transaction.findMany({
@@ -152,8 +153,10 @@ const resolvers = {
             Category: true,
           },
           where: {
-            accountId: accountId,
             categoryId: categoryId,
+            Account: {
+              bank: bank,
+            },
             OR: [
               {
                 reference: {
@@ -202,8 +205,10 @@ const resolvers = {
             Category: true,
           },
           where: {
-            accountId: accountId,
             categoryId: categoryId,
+            Account: {
+              bank: bank,
+            },
             OR: [
               {
                 reference: {
@@ -261,8 +266,10 @@ const resolvers = {
             Category: true,
           },
           where: {
-            accountId: accountId,
             categoryId: categoryId,
+            Account: {
+              bank: bank,
+            },
             OR: [
               {
                 reference: {
@@ -358,6 +365,23 @@ const resolvers = {
           Category: true,
           Account: true,
         },
+      })
+    },
+    autocompleteAccountBanks: async (
+      _parent: Object,
+      _args: { search: string }
+    ) => {
+      if (!_args.search) {
+        return []
+      }
+
+      return prisma.account.findMany({
+        where: {
+          bank: {
+            startsWith: _args.search,
+          },
+        },
+        distinct: ['bank'],
       })
     },
   },

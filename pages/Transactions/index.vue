@@ -3,6 +3,7 @@
     <Table
       title="Transactions"
       description="List of transactions including their reference, category, date and amount"
+      :hasData="paginatedTransactions?.edges.length > 0"
     >
       <template slot="filters">
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -32,74 +33,14 @@
               />
             </div>
           </div>
-          <div>
-            <label
-              for="stating-month"
-              class="block text-sm font-medium text-gray-700"
-              >Account</label
-            >
-            <div class="mt-1 relative rounded-md shadow-sm">
-              <input
-                type="text"
-                name="stating-month"
-                id="stating-month"
-                class="appearance-none rounded border border-gray-400 border-b block pl-4 pr-6 py-2 w-full bg-white text-sm placeholder-gray-400 text-gray-700 focus:bg-white focus:placeholder-gray-600 focus:text-gray-700 focus:outline-none"
-                placeholder="yyyy-mm"
-              />
-              <div
-                class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
-                </svg>
-              </div>
-            </div>
-          </div>
-          <div>
-            <label
-              for="stating-month"
-              class="block text-sm font-medium text-gray-700"
-              >Bank</label
-            >
-            <div class="mt-1 relative rounded-md shadow-sm">
-              <input
-                type="text"
-                name="stating-month"
-                id="stating-month"
-                class="appearance-none rounded border border-gray-400 border-b block pl-4 pr-6 py-2 w-full bg-white text-sm placeholder-gray-400 text-gray-700 focus:bg-white focus:placeholder-gray-600 focus:text-gray-700 focus:outline-none"
-                placeholder="yyyy-mm"
-              />
-              <div
-                class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
-                </svg>
-              </div>
-            </div>
-          </div>
+          <AutoComplete
+            name="Banks"
+            :options="autocompleteAccountBanks"
+            optionValueKey="bank"
+            optionIdentifierKey="bank"
+            @update="bankSearch = $event"
+            @selected="bank = $event?.bank"
+          />
         </div>
       </template>
       <template slot="header">
@@ -158,6 +99,8 @@ export default Vue.extend({
   data() {
     return {
       search: '',
+      bankSearch: '',
+      bank: '',
       selectedAccountId: '',
       selectedCategoryId: '',
     }
@@ -183,17 +126,14 @@ export default Vue.extend({
         variables: {
           linksAfter: endCursor,
           search: this.search,
-          accountId: this.selectedAccountId,
           categoryId: this.selectedCategoryId,
         },
-
         // @ts-ignore
         updateQuery: (previousResult, { fetchMoreResult }) => {
           fetchMoreResult.paginatedTransactions.edges = [
             ...previousResult.paginatedTransactions.edges,
             ...fetchMoreResult.paginatedTransactions.edges,
           ]
-
           return fetchMoreResult
         },
       })
@@ -204,8 +144,19 @@ export default Vue.extend({
           linksFirst: 10,
           linksAfter: '',
           search: this.search,
-          accountId: this.selectedAccountId,
+          bank: this.bank,
           categoryId: this.selectedCategoryId,
+        },
+        // @ts-ignore
+        updateQuery: (previousResult, { fetchMoreResult }) => {
+          return fetchMoreResult
+        },
+      })
+    },
+    reloadBanks() {
+      this.$apollo.queries.autocompleteAccountBanks.fetchMore({
+        variables: {
+          search: this.bankSearch,
         },
 
         // @ts-ignore
@@ -219,6 +170,12 @@ export default Vue.extend({
     search() {
       this.applyFilters()
     },
+    bankSearch() {
+      this.reloadBanks()
+    },
+    bank() {
+      this.applyFilters()
+    },
   },
   apollo: {
     paginatedTransactions: {
@@ -227,14 +184,14 @@ export default Vue.extend({
           $linksFirst: Int
           $linksAfter: String
           $search: String
-          $accountId: String
+          $bank: String
           $categoryId: String
         ) {
           paginatedTransactions(
             first: $linksFirst
             after: $linksAfter
             search: $search
-            accountId: $accountId
+            bank: $bank
             categoryId: $categoryId
           ) {
             pageInfo {
@@ -260,6 +217,18 @@ export default Vue.extend({
       `,
       variables: {
         linksFirst: 10,
+        search: '',
+      },
+    },
+    autocompleteAccountBanks: {
+      query: gql`
+        query ($search: String) {
+          autocompleteAccountBanks(search: $search) {
+            bank
+          }
+        }
+      `,
+      variables: {
         search: '',
       },
     },

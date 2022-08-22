@@ -8,9 +8,10 @@ const typeDefs = gql`
       first: Int
       after: String
       search: String
-      accountId: String
+      bank: String
       categoryId: String
     ): TransactionResponse
+    autocompleteAccountBanks(search: String): [Account]
     accountsCount: Count
     categoriesCount: Count
     transactionsCount: Count
