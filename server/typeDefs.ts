@@ -81,6 +81,13 @@ const typeDefs = gql`
   type Count {
     _all: Int!
   }
+
+  type Mutation {
+    updateTransactionCategory(
+      transactionId: String!
+      categoryName: String!
+    ): Transaction
+  }
 `
 
 export default typeDefs

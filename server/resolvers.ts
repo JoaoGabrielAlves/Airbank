@@ -1,5 +1,5 @@
-import { PrismaClient } from '@prisma/client'
-import { type } from 'os'
+import { PrismaClient, Prisma } from '@prisma/client'
+import { randomUUID } from 'crypto'
 
 const prisma = new PrismaClient()
 
@@ -419,6 +419,40 @@ const resolvers = {
           Account: true,
         },
       })
+    },
+  },
+  Mutation: {
+    updateTransactionCategory: async (
+      _parent: Object,
+      _args: { transactionId: string; categoryName: string }
+    ) => {
+      const categoryUpsert: Prisma.CategoryUpsertArgs = {
+        where: {
+          name: _args.categoryName,
+        },
+        update: {},
+        create: {
+          id: randomUUID(),
+          name: _args.categoryName,
+        },
+      }
+
+      const category = await prisma.category.upsert(categoryUpsert)
+
+      const accountUpdate: Prisma.TransactionUpdateArgs = {
+        where: {
+          id: _args.transactionId,
+        },
+        data: {
+          categoryId: category.id,
+        },
+        include: {
+          Category: true,
+          Account: true,
+        },
+      }
+
+      return await prisma.transaction.update(accountUpdate)
     },
   },
 }
