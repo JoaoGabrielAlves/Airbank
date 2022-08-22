@@ -8,40 +8,27 @@
     >
       <template slot="filters">
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          <div>
-            <label for="search" class="block text-sm font-medium text-gray-700"
-              >Search</label
-            >
-            <div class="mt-1 relative rounded-md shadow-sm">
-              <span
-                class="h-full absolute inset-y-0 left-0 flex items-center pl-2"
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  class="h-4 w-4 fill-current text-gray-500"
-                >
-                  <path
-                    d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1114.32 4.906l5.387 5.387a1 1 0 01-1.414 1.414l-5.387-5.387A8 8 0 012 10z"
-                  ></path>
-                </svg>
-              </span>
-              <input
-                :disabled="$apollo.queries.paginatedTransactions.loading"
-                v-model.lazy="search"
-                placeholder="Search"
-                name="search"
-                id="search"
-                class="appearance-none rounded border border-gray-400 border-b block pl-8 pr-6 py-2 w-full bg-white text-sm placeholder-gray-400 text-gray-700 focus:bg-white focus:placeholder-gray-600 focus:text-gray-700 focus:outline-none"
-              />
-            </div>
-          </div>
+          <Input
+            leadingIcon
+            label="Search"
+            placeholder="Search"
+            name="search"
+            @change="search = $event"
+            :disabled="$apollo.queries.paginatedTransactions.loading"
+          >
+            <svg viewBox="0 0 24 24" class="h-4 w-4 fill-current text-gray-500">
+              <path
+                d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1114.32 4.906l5.387 5.387a1 1 0 01-1.414 1.414l-5.387-5.387A8 8 0 012 10z"
+              ></path>
+            </svg>
+          </Input>
           <AutoComplete
             :disabled="$apollo.queries.paginatedTransactions.loading"
             name="Banks"
             :options="autocompleteAccountBanks"
             optionValueKey="bank"
             optionIdentifierKey="bank"
-            @update="bankSearch = $event"
+            @change="bankSearch = $event"
             @selected="bank = $event"
           />
           <AutoComplete
@@ -50,9 +37,55 @@
             :options="autocompleteCategory"
             optionValueKey="name"
             optionIdentifierKey="id"
-            @update="categorySearch = $event"
+            @change="categorySearch = $event"
             @selected="selectedCategoryId = $event"
           />
+          <Input
+            trailingIcon
+            label="Starting month"
+            placeholder="yyyy-mm"
+            name="starting_month"
+            @change="startingMonth = $event"
+            :disabled="$apollo.queries.paginatedTransactions.loading"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+              />
+            </svg>
+          </Input>
+          <Input
+            trailingIcon
+            label="Ending month"
+            placeholder="yyyy-mm"
+            name="ending_month"
+            @change="endingMonth = $event"
+            :disabled="$apollo.queries.paginatedTransactions.loading"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+              />
+            </svg>
+          </Input>
         </div>
       </template>
       <template slot="header">
@@ -120,6 +153,8 @@ export default Vue.extend({
       bank: '',
       categorySearch: '',
       selectedCategoryId: '',
+      startingMonth: '',
+      endingMonth: '',
     }
   },
   head() {
@@ -164,6 +199,8 @@ export default Vue.extend({
           search: this.search,
           bank: this.bank,
           categoryId: this.selectedCategoryId,
+          startingMonth: this.startingMonth,
+          endingMonth: this.endingMonth,
         },
         // @ts-ignore
         updateQuery: (previousResult, { fetchMoreResult }) => {
@@ -212,6 +249,12 @@ export default Vue.extend({
     selectedCategoryId() {
       this.applyFilters()
     },
+    startingMonth() {
+      this.applyFilters()
+    },
+    endingMonth() {
+      this.applyFilters()
+    },
   },
   apollo: {
     paginatedTransactions: {
@@ -222,6 +265,8 @@ export default Vue.extend({
           $search: String
           $bank: String
           $categoryId: String
+          $startingMonth: String
+          $endingMonth: String
         ) {
           paginatedTransactions(
             first: $linksFirst
@@ -229,6 +274,8 @@ export default Vue.extend({
             search: $search
             bank: $bank
             categoryId: $categoryId
+            startingMonth: $startingMonth
+            endingMonth: $endingMonth
           ) {
             pageInfo {
               endCursor

@@ -123,6 +123,8 @@ const resolvers = {
         search: string
         bank: string
         categoryId: string
+        startingMonth: string
+        endingMonth: string
       }
     ) => {
       let queryResults = null
@@ -141,6 +143,11 @@ const resolvers = {
       let categoryId = _args.categoryId != '' ? _args.categoryId : undefined
 
       let bank = _args.bank != '' ? _args.bank : undefined
+
+      let startingMonth =
+        _args.startingMonth != '' ? _args.startingMonth : undefined
+
+      let endingMonth = _args.endingMonth != '' ? _args.endingMonth : undefined
 
       if (_args.after) {
         queryResults = await prisma.transaction.findMany({
@@ -198,8 +205,8 @@ const resolvers = {
                 bank: bank,
               },
               date: {
-                gt: '2022-06',
-                lt: '2022-12',
+                gte: startingMonth,
+                lte: endingMonth,
               },
             },
           },
@@ -256,8 +263,8 @@ const resolvers = {
                 bank: bank,
               },
               date: {
-                gt: '2022-06',
-                lt: '2022-12',
+                gte: startingMonth,
+                lte: endingMonth,
               },
             },
           },
@@ -323,8 +330,8 @@ const resolvers = {
                 bank: bank,
               },
               date: {
-                gt: '2022-06',
-                lt: '2022-12',
+                gte: startingMonth,
+                lte: endingMonth,
               },
             },
           },
