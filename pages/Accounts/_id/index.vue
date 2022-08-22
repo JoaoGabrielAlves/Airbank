@@ -1,5 +1,5 @@
 <template>
-  <Details title="Category information" description="Category name and color">
+  <Details title="Account information" description="Account name and bank">
     <DetailsSection title="Name">
       {{ accountById?.name }}
     </DetailsSection>

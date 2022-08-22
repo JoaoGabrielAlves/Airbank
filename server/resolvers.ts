@@ -1,4 +1,4 @@
-import { PrismaClient, Prisma } from '@prisma/client'
+import { PrismaClient, Prisma as PrismaTypes } from '@prisma/client'
 import { randomUUID } from 'crypto'
 
 const prisma = new PrismaClient()
@@ -132,7 +132,7 @@ const resolvers = {
       let search =
         _args.search != ''
           ? _args.search
-              .replace(tsquerySpecialChars, ' ')
+              ?.replace(tsquerySpecialChars, ' ')
               .trim()
               .split(/\s+/)
               .join(' | ')
@@ -197,6 +197,10 @@ const resolvers = {
               Account: {
                 bank: bank,
               },
+              date: {
+                gt: '2022-06',
+                lt: '2022-12',
+              },
             },
           },
         })
@@ -250,6 +254,10 @@ const resolvers = {
               categoryId: categoryId,
               Account: {
                 bank: bank,
+              },
+              date: {
+                gt: '2022-06',
+                lt: '2022-12',
               },
             },
           },
@@ -313,6 +321,10 @@ const resolvers = {
               categoryId: categoryId,
               Account: {
                 bank: bank,
+              },
+              date: {
+                gt: '2022-06',
+                lt: '2022-12',
               },
             },
           },
@@ -426,7 +438,9 @@ const resolvers = {
       _parent: Object,
       _args: { transactionId: string; categoryName: string }
     ) => {
-      const categoryUpsert: Prisma.CategoryUpsertArgs = {
+      let randomColor = Math.floor(Math.random() * 16777215).toString(16)
+
+      const categoryUpsert: PrismaTypes.CategoryUpsertArgs = {
         where: {
           name: _args.categoryName,
         },
@@ -434,12 +448,13 @@ const resolvers = {
         create: {
           id: randomUUID(),
           name: _args.categoryName,
+          color: randomColor,
         },
       }
 
       const category = await prisma.category.upsert(categoryUpsert)
 
-      const accountUpdate: Prisma.TransactionUpdateArgs = {
+      const accountUpdate: PrismaTypes.TransactionUpdateArgs = {
         where: {
           id: _args.transactionId,
         },
