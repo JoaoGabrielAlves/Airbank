@@ -39,7 +39,7 @@
             optionValueKey="bank"
             optionIdentifierKey="bank"
             @update="bankSearch = $event"
-            @selected="bank = $event?.bank"
+            @selected="bank = $event"
           />
           <AutoComplete
             name="Category"
@@ -47,7 +47,7 @@
             optionValueKey="name"
             optionIdentifierKey="id"
             @update="categorySearch = $event"
-            @selected="selectedCategoryId = $event?.id"
+            @selected="selectedCategoryId = $event"
           />
         </div>
       </template>

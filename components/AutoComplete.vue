@@ -1,9 +1,13 @@
 <template>
   <div>
-    <label :for="name" class="block text-sm font-medium text-gray-700">
+    <label
+      v-if="label"
+      :for="name"
+      class="block text-sm font-medium text-gray-700"
+    >
       {{ name }}
     </label>
-    <div class="relative mt-1">
+    <div class="relative" :class="label ? 'mt-1' : ''">
       <input
         :name="name"
         :id="name"
@@ -116,22 +120,34 @@ export default Vue.extend({
   },
   name: 'AutoComplete',
   props: {
+    label: Boolean,
     name: String,
     options: Array,
     optionIdentifierKey: String,
     optionValueKey: String,
+    selectedValue: String,
+  },
+  created() {
+    if (this.selectedValue) {
+      this.selectedOption = this.selectedValue
+      this.search = this.selectedValue
+
+      this.showList = false
+    }
   },
   watch: {
     search() {
-      this.$emit('update', this.search)
+      if (this.search != this.selectedValue) {
+        this.$emit('update', this.search)
 
-      if (!this.options?.length) {
-        this.selectedOption = ''
-        this.showList = true
-      }
+        if (!this.options?.length) {
+          this.selectedOption = ''
+          this.showList = true
+        }
 
-      if (!this.search) {
-        this.$emit('selected', '')
+        if (!this.search) {
+          this.$emit('selected', '')
+        }
       }
     },
   },
@@ -146,7 +162,7 @@ export default Vue.extend({
         this.search = selectedOption[this.optionValueKey]
         this.selectedOption = selectedOption[this.optionValueKey]
         this.showList = false
-        this.$emit('selected', selectedOption)
+        this.$emit('selected', selectedOption[this.optionIdentifierKey])
       }
     },
     toggleShowList() {
