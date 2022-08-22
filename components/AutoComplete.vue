@@ -131,6 +131,7 @@ export default Vue.extend({
     optionValueKey: String,
     selectedValue: String,
     disabled: Boolean,
+    hasMutation: Boolean,
   },
   created() {
     if (this.selectedValue) {
@@ -159,15 +160,14 @@ export default Vue.extend({
   methods: {
     handleSelected() {
       const selected: any = this.options[this.arrowCounter]
-      const selectedOption: any = this.options.find(
-        (o: any) => o[this.optionValueKey] === selected[this.optionValueKey]
-      )
 
-      if (selectedOption) {
-        this.search = selectedOption[this.optionValueKey]
-        this.selectedOption = selectedOption[this.optionValueKey]
+      if (selected) {
+        this.search = selected[this.optionValueKey]
+        this.selectedOption = selected[this.optionValueKey]
         this.showList = false
-        this.$emit('selected', selectedOption[this.optionIdentifierKey])
+        this.$emit('selected', selected[this.optionIdentifierKey])
+      } else if (this.hasMutation) {
+        this.$emit('selected', this.search)
       }
     },
     toggleShowList() {

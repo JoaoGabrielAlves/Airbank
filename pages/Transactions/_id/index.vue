@@ -35,6 +35,7 @@
           :options="autocompleteCategory"
           optionValueKey="name"
           optionIdentifierKey="name"
+          hasMutation
           @update="categorySearch = $event"
           @selected="selectedCategoryName = $event"
         />
