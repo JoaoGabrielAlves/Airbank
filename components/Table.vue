@@ -9,7 +9,7 @@
     <div class="mt-8">
       <slot name="filters"></slot>
     </div>
-    <div class="mt-8 flex flex-col">
+    <div v-if="hasData" class="mt-8 flex flex-col">
       <div class="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
         <div class="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
           <div
@@ -29,6 +29,10 @@
         </div>
       </div>
     </div>
+    <div class="flex justify-center items-center py-12" v-else>
+      <span v-if="isLoading"> Loading... </span>
+      <span v-else> No data found using those filters </span>
+    </div>
   </div>
 </template>
 
@@ -38,6 +42,8 @@ export default {
   props: {
     title: String,
     description: String,
+    hasData: Boolean,
+    isLoading: Boolean,
   },
 }
 </script>

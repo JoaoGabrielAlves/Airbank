@@ -9,6 +9,7 @@
     </label>
     <div class="relative" :class="label ? 'mt-1' : ''">
       <input
+        :disabled="disabled"
         :name="name"
         :id="name"
         v-model="search"
@@ -40,7 +41,7 @@
       </button>
 
       <ul
-        v-if="options?.length > 0 && showList"
+        v-if="options?.length > 0 && showList && search"
         class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
         id="options"
         role="listbox"
@@ -120,12 +121,16 @@ export default Vue.extend({
   },
   name: 'AutoComplete',
   props: {
-    label: Boolean,
+    label: {
+      default: true,
+      type: Boolean,
+    },
     name: String,
     options: Array,
     optionIdentifierKey: String,
     optionValueKey: String,
     selectedValue: String,
+    disabled: Boolean,
   },
   created() {
     if (this.selectedValue) {

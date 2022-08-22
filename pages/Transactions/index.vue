@@ -2,6 +2,7 @@
   <div>
     <Table
       title="Transactions"
+      :isLoading="$apollo.queries.paginatedTransactions.loading"
       description="List of transactions including their reference, category, date and amount"
       :hasData="paginatedTransactions?.edges.length > 0"
     >
@@ -25,6 +26,7 @@
                 </svg>
               </span>
               <input
+                :disabled="$apollo.queries.paginatedTransactions.loading"
                 v-model.lazy="search"
                 placeholder="Search"
                 name="search"
@@ -34,6 +36,7 @@
             </div>
           </div>
           <AutoComplete
+            :disabled="$apollo.queries.paginatedTransactions.loading"
             name="Banks"
             :options="autocompleteAccountBanks"
             optionValueKey="bank"
@@ -42,6 +45,7 @@
             @selected="bank = $event"
           />
           <AutoComplete
+            :disabled="$apollo.queries.paginatedTransactions.loading"
             name="Category"
             :options="autocompleteCategory"
             optionValueKey="name"
@@ -95,7 +99,12 @@
         </tr>
       </template>
     </Table>
-    <Pagination :resource="paginatedTransactions" @showMore="showMore" />
+    <Pagination
+      v-if="paginatedTransactions?.edges.length > 0"
+      :disabled="$apollo.queries.paginatedTransactions.loading"
+      :resource="paginatedTransactions"
+      @showMore="showMore"
+    />
   </div>
 </template>
 
