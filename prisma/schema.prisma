@@ -20,7 +20,7 @@ model Account {
 
 model Category {
   id          String        @id @unique
-  name        String
+  name        String        @unique
   color       String?
   Transaction Transaction[]
 
@@ -28,15 +28,15 @@ model Category {
 }
 
 model Transaction {
-  id         String                   @id @unique
+  id         String    @id @unique
   accountId  String
   categoryId String?
   reference  String?
   amount     String
   currency   String
   date       String
-  Account    Account                  @relation(fields: [accountId], references: [id])
-  Category   Category?                @relation(fields: [categoryId], references: [id])
+  Account    Account   @relation(fields: [accountId], references: [id])
+  Category   Category? @relation(fields: [categoryId], references: [id])
 
   @@index([categoryId, accountId])
   @@index([reference, amount, currency, date])
