@@ -3,6 +3,8 @@
     <Table
       title="Accounts"
       description="List of accounts including their name and bank"
+      :hasData="paginatedAccounts?.edges.length > 0"
+      :isLoading="$apollo.queries.paginatedAccounts.loading"
     >
       <template slot="header">
         <TableHead title="Name" :isFirst="true" />

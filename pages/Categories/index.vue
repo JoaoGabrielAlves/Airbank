@@ -3,6 +3,8 @@
     <Table
       title="Categories"
       description="List of categories including their name and color"
+      :hasData="paginatedCategories?.edges.length > 0"
+      :isLoading="$apollo.queries.paginatedCategories.loading"
     >
       <template slot="header">
         <TableHead title="Name" :isFirst="true" />
