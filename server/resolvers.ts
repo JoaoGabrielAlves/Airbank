@@ -362,17 +362,6 @@ const resolvers = {
         },
       })
     },
-    transactionById: async (_parent: Object, _args: { id: string }) => {
-      return await prisma.transaction.findUnique({
-        where: {
-          id: _args.id,
-        },
-        include: {
-          Category: true,
-          Account: true,
-        },
-      })
-    },
     autocompleteAccountBanks: async (
       _parent: Object,
       _args: { search: string }
@@ -403,6 +392,24 @@ const resolvers = {
           name: {
             startsWith: _args.search,
           },
+        },
+      })
+    },
+    transactionById: async (_parent: Object, _args: { id: string }) => {
+      return await prisma.transaction.findUnique({
+        where: {
+          id: _args.id,
+        },
+        include: {
+          Category: true,
+          Account: true,
+        },
+      })
+    },
+    categoryById: async (_parent: Object, _args: { id: string }) => {
+      return await prisma.category.findUnique({
+        where: {
+          id: _args.id,
         },
       })
     },

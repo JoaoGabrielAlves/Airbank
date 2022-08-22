@@ -17,6 +17,7 @@ const typeDefs = gql`
     categoriesCount: Count
     transactionsCount: Count
     transactionById(id: String!): Transaction
+    categoryById(id: String!): Category
   }
 
   type Account {

@@ -13,6 +13,7 @@
           class="cursor-pointer hover:bg-gray-50"
           v-for="category in paginatedCategories?.edges"
           :key="category.node.id"
+          @click="view(category.node.id)"
         >
           <TableColumn :isFirst="true">
             {{ category.node.name }}
@@ -88,6 +89,9 @@ export default Vue.extend({
           return fetchMoreResult
         },
       })
+    },
+    view(id: number) {
+      this.$router.push(`/categories/${id}`)
     },
   },
 })
