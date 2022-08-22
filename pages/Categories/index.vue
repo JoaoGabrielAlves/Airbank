@@ -90,7 +90,7 @@ export default Vue.extend({
         },
       })
     },
-    view(id: number) {
+    view(id: string) {
       this.$router.push(`/categories/${id}`)
     },
   },

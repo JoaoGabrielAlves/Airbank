@@ -13,6 +13,7 @@
           class="cursor-pointer hover:bg-gray-50"
           v-for="account in paginatedAccounts?.edges"
           :key="account.node.id"
+          @click="view(account.node.id)"
         >
           <TableColumn :isFirst="true">
             {{ account.node.name }}
@@ -89,6 +90,9 @@ export default Vue.extend({
           return fetchMoreResult
         },
       })
+    },
+    view(id: string) {
+      this.$router.push(`/accounts/${id}`)
     },
   },
 })

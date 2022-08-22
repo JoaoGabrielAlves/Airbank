@@ -126,7 +126,7 @@ export default Vue.extend({
     }
   },
   methods: {
-    view(id: number) {
+    view(id: string) {
       this.$router.push(`/transactions/${id}`)
     },
     showMore(endCursor: string) {

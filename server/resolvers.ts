@@ -395,6 +395,20 @@ const resolvers = {
         },
       })
     },
+    accountById: async (_parent: Object, _args: { id: string }) => {
+      return await prisma.account.findUnique({
+        where: {
+          id: _args.id,
+        },
+      })
+    },
+    categoryById: async (_parent: Object, _args: { id: string }) => {
+      return await prisma.category.findUnique({
+        where: {
+          id: _args.id,
+        },
+      })
+    },
     transactionById: async (_parent: Object, _args: { id: string }) => {
       return await prisma.transaction.findUnique({
         where: {
@@ -403,13 +417,6 @@ const resolvers = {
         include: {
           Category: true,
           Account: true,
-        },
-      })
-    },
-    categoryById: async (_parent: Object, _args: { id: string }) => {
-      return await prisma.category.findUnique({
-        where: {
-          id: _args.id,
         },
       })
     },
