@@ -2,8 +2,18 @@ import { gql } from 'apollo-server-express'
 
 const typeDefs = gql`
   type Query {
-    paginatedAccounts(first: Int, after: String): AccountResponse
-    paginatedCategories(first: Int, after: String): CategoryResponse
+    paginatedAccounts(
+      first: Int
+      after: String
+      sortField: String
+      sortDirection: String
+    ): AccountResponse
+    paginatedCategories(
+      first: Int
+      after: String
+      sortField: String
+      sortDirection: String
+    ): CategoryResponse
     paginatedTransactions(
       first: Int
       after: String

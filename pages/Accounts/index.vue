@@ -7,8 +7,24 @@
       :isLoading="$apollo.queries.paginatedAccounts.loading"
     >
       <template slot="header">
-        <TableHead title="Name" :isFirst="true" />
-        <TableHead title="Bank" />
+        <TableHead
+          hasSort
+          :sortField="sortField"
+          :sortDirection="sortDirection"
+          field="name"
+          title="Name"
+          @click="updateSortFieldAndDirection"
+          :isFirst="true"
+        />
+        <TableHead
+          hasSort
+          :sortField="sortField"
+          :sortDirection="sortDirection"
+          field="bank"
+          title="Bank"
+          @click="updateSortFieldAndDirection"
+          :isFirst="true"
+        />
       </template>
       <template slot="body">
         <tr
@@ -48,13 +64,24 @@ export default Vue.extend({
     }
   },
   data: () => ({
-    page: 0,
+    sortField: '',
+    sortDirection: '',
   }),
   apollo: {
     paginatedAccounts: {
       query: gql`
-        query ($linksFirst: Int, $linksAfter: String) {
-          paginatedAccounts(first: $linksFirst, after: $linksAfter) {
+        query (
+          $linksFirst: Int
+          $linksAfter: String
+          $sortField: String
+          $sortDirection: String
+        ) {
+          paginatedAccounts(
+            first: $linksFirst
+            after: $linksAfter
+            sortField: $sortField
+            sortDirection: $sortDirection
+          ) {
             pageInfo {
               endCursor
               hasNextPage
@@ -93,8 +120,30 @@ export default Vue.extend({
         },
       })
     },
+    applyFilters() {
+      this.$apollo.queries.paginatedAccounts.fetchMore({
+        variables: {
+          linksFirst: 10,
+          linksAfter: '',
+          sortField: this.sortField,
+          sortDirection: this.sortDirection,
+        },
+        updateQuery: (previousResult, { fetchMoreResult }) => {
+          return fetchMoreResult
+        },
+      })
+    },
     view(id: string) {
       this.$router.push(`/accounts/${id}`)
+    },
+    updateSortFieldAndDirection(
+      direction: 'asc' | 'desc',
+      field: 'name' | 'bank'
+    ) {
+      this.sortDirection = direction
+      this.sortField = field
+
+      this.applyFilters()
     },
   },
 })

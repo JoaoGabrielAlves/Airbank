@@ -4,10 +4,10 @@
     :class="isFirst ? 'py-3.5 pl-4 pr-3 sm:pl-6' : 'px-3 py-3.5'"
     class="text-left text-sm font-semibold text-gray-900"
   >
-    <a v-if="hasSort" href="#" class="group inline-flex">
+    <div v-if="hasSort" class="group inline-flex">
       {{ title }}
       <span
-        class="text-gray-600 group-hover:text-gray-900"
+        class="text-gray-600 group-hover:text-gray-900 cursor-pointer"
         @click="updateSortFieldAndDirection()"
       >
         <template v-if="sortField == field">
@@ -55,7 +55,7 @@
           />
         </svg>
       </span>
-    </a>
+    </div>
     <template v-else>
       {{ title }}
     </template>

@@ -7,7 +7,15 @@
       :isLoading="$apollo.queries.paginatedCategories.loading"
     >
       <template slot="header">
-        <TableHead title="Name" :isFirst="true" />
+        <TableHead
+          hasSort
+          :sortField="sortField"
+          :sortDirection="sortDirection"
+          field="name"
+          title="Name"
+          @click="updateSortFieldAndDirection"
+          :isFirst="true"
+        />
         <TableHead title="Color" />
       </template>
       <template slot="body">
@@ -37,11 +45,39 @@ import Vue from 'vue'
 import gql from 'graphql-tag'
 
 export default Vue.extend({
+  head() {
+    return {
+      title: 'Categories',
+      meta: [
+        {
+          hid: 'description',
+          name: 'description',
+          content: 'List of transaction categories',
+        },
+      ],
+    }
+  },
+  data() {
+    return {
+      sortField: '',
+      sortDirection: '',
+    }
+  },
   apollo: {
     paginatedCategories: {
       query: gql`
-        query ($linksFirst: Int, $linksAfter: String) {
-          paginatedCategories(first: $linksFirst, after: $linksAfter) {
+        query (
+          $linksFirst: Int
+          $linksAfter: String
+          $sortField: String
+          $sortDirection: String
+        ) {
+          paginatedCategories(
+            first: $linksFirst
+            after: $linksAfter
+            sortField: $sortField
+            sortDirection: $sortDirection
+          ) {
             pageInfo {
               endCursor
               hasNextPage
@@ -62,26 +98,17 @@ export default Vue.extend({
       },
     },
   },
-  head() {
-    return {
-      title: 'Categories',
-      meta: [
-        {
-          hid: 'description',
-          name: 'description',
-          content: 'List of transaction categories',
-        },
-      ],
-    }
-  },
   methods: {
     showMore(endCursor: string) {
       this.$apollo.queries.paginatedCategories.fetchMore({
         variables: {
           linksAfter: endCursor,
           previousEndCursor: endCursor,
+          sortField: this.sortField,
+          sortDirection: this.sortDirection,
         },
 
+        // @ts-ignore
         updateQuery: (previousResult, { fetchMoreResult }) => {
           fetchMoreResult.paginatedCategories.edges = [
             ...previousResult.paginatedCategories.edges,
@@ -92,8 +119,28 @@ export default Vue.extend({
         },
       })
     },
+    applyFilters() {
+      this.$apollo.queries.paginatedCategories.fetchMore({
+        variables: {
+          linksFirst: 10,
+          linksAfter: '',
+          sortField: this.sortField,
+          sortDirection: this.sortDirection,
+        },
+        // @ts-ignore
+        updateQuery: (previousResult, { fetchMoreResult }) => {
+          return fetchMoreResult
+        },
+      })
+    },
     view(id: string) {
       this.$router.push(`/categories/${id}`)
+    },
+    updateSortFieldAndDirection(direction: 'asc' | 'desc', field: 'name') {
+      this.sortDirection = direction
+      this.sortField = field
+
+      this.applyFilters()
     },
   },
 })

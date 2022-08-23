@@ -6,7 +6,12 @@ const resolvers = {
   Query: {
     paginatedAccounts: async (
       _parent: Object,
-      _args: { first: number; after: string },
+      _args: {
+        first: number
+        after: string
+        sortField: 'name' | 'bank'
+        sortDirection: 'asc' | 'desc'
+      },
       context: Context
     ) => {
       let queryResults = null
@@ -17,10 +22,17 @@ const resolvers = {
           }
         : undefined
 
+      const orderBy = _args.sortField
+        ? {
+            [_args.sortField]: _args.sortDirection,
+          }
+        : undefined
+
       queryResults = await context.prisma.account.findMany({
         take: _args.first,
         skip: _args.after ? 1 : undefined,
         cursor: afterCursor,
+        orderBy: orderBy,
       })
 
       if (queryResults.length > 0) {
@@ -60,7 +72,12 @@ const resolvers = {
     },
     paginatedCategories: async (
       _parent: Object,
-      _args: { first: number; after: string },
+      _args: {
+        first: number
+        after: string
+        sortField: 'name'
+        sortDirection: 'asc' | 'desc'
+      },
       context: Context
     ) => {
       let queryResults = null
@@ -71,10 +88,17 @@ const resolvers = {
           }
         : undefined
 
+      const orderBy = _args.sortField
+        ? {
+            [_args.sortField]: _args.sortDirection,
+          }
+        : undefined
+
       queryResults = await context.prisma.category.findMany({
         take: _args.first,
         skip: _args.after ? 1 : undefined,
         cursor: afterCursor,
+        orderBy: orderBy,
       })
 
       if (queryResults.length > 0) {
