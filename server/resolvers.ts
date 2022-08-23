@@ -1,13 +1,13 @@
-import { PrismaClient, Prisma as PrismaTypes } from '@prisma/client'
+import { Prisma as PrismaTypes } from '@prisma/client'
 import { randomUUID } from 'crypto'
-
-const prisma = new PrismaClient()
+import { Context } from './context'
 
 const resolvers = {
   Query: {
     paginatedAccounts: async (
       _parent: Object,
-      _args: { first: number; after: string }
+      _args: { first: number; after: string },
+      context: Context
     ) => {
       let queryResults = null
 
@@ -17,7 +17,7 @@ const resolvers = {
           }
         : undefined
 
-      queryResults = await prisma.account.findMany({
+      queryResults = await context.prisma.account.findMany({
         take: _args.first,
         skip: _args.after ? 1 : undefined,
         cursor: afterCursor,
@@ -28,7 +28,7 @@ const resolvers = {
 
         const endCursor = lastAccountInResults.id
 
-        const secondQueryCount = await prisma.account.count({
+        const secondQueryCount = await context.prisma.account.count({
           take: _args.first,
           cursor: {
             id: endCursor,
@@ -60,7 +60,8 @@ const resolvers = {
     },
     paginatedCategories: async (
       _parent: Object,
-      _args: { first: number; after: string }
+      _args: { first: number; after: string },
+      context: Context
     ) => {
       let queryResults = null
 
@@ -70,7 +71,7 @@ const resolvers = {
           }
         : undefined
 
-      queryResults = await prisma.category.findMany({
+      queryResults = await context.prisma.category.findMany({
         take: _args.first,
         skip: _args.after ? 1 : undefined,
         cursor: afterCursor,
@@ -81,7 +82,7 @@ const resolvers = {
 
         const endCursor = lastCategoryInResults.id
 
-        const secondQueryCount = await prisma.category.count({
+        const secondQueryCount = await context.prisma.category.count({
           take: _args.first,
           cursor: {
             id: endCursor,
@@ -121,7 +122,10 @@ const resolvers = {
         categoryId: string
         startingMonth: string
         endingMonth: string
-      }
+        sortField: 'amount' | 'date' | 'id'
+        sortDirection: 'asc' | 'desc'
+      },
+      context: Context
     ) => {
       let queryResults = null
 
@@ -164,11 +168,6 @@ const resolvers = {
             },
           },
           {
-            amount: {
-              search: search,
-            },
-          },
-          {
             currency: {
               search: search,
             },
@@ -203,7 +202,13 @@ const resolvers = {
         },
       }
 
-      queryResults = await prisma.transaction.findMany({
+      const orderBy = _args.sortField
+        ? {
+            [_args.sortField]: _args.sortDirection,
+          }
+        : undefined
+
+      queryResults = await context.prisma.transaction.findMany({
         take: _args.first,
         skip: _args.after ? 1 : undefined,
         cursor: afterCursor,
@@ -211,6 +216,7 @@ const resolvers = {
           Category: true,
         },
         where: whereQuery,
+        orderBy: orderBy,
       })
 
       if (queryResults.length > 0) {
@@ -218,7 +224,7 @@ const resolvers = {
 
         const endCursor = lastTransactionInResults.id
 
-        const secondQueryResults = await prisma.transaction.count({
+        const secondQueryResults = await context.prisma.transaction.count({
           take: _args.first,
           cursor: {
             id: endCursor,
@@ -249,22 +255,22 @@ const resolvers = {
         }
       }
     },
-    accountsCount: async (_parent: Object, _args: {}) => {
-      return await prisma.account.count({
+    accountsCount: async (_parent: Object, _args: {}, context: Context) => {
+      return await context.prisma.account.count({
         select: {
           _all: true,
         },
       })
     },
-    categoriesCount: async (_parent: Object, _args: {}) => {
-      return await prisma.category.count({
+    categoriesCount: async (_parent: Object, _args: {}, context: Context) => {
+      return await context.prisma.category.count({
         select: {
           _all: true,
         },
       })
     },
-    transactionsCount: async (_parent: Object, _args: {}) => {
-      return await prisma.transaction.count({
+    transactionsCount: async (_parent: Object, _args: {}, context: Context) => {
+      return await context.prisma.transaction.count({
         select: {
           _all: true,
         },
@@ -272,13 +278,14 @@ const resolvers = {
     },
     autocompleteAccountBanks: async (
       _parent: Object,
-      _args: { search: string }
+      _args: { search: string },
+      context: Context
     ) => {
       if (!_args.search) {
         return []
       }
 
-      return prisma.account.findMany({
+      return context.prisma.account.findMany({
         where: {
           bank: {
             startsWith: _args.search,
@@ -290,13 +297,14 @@ const resolvers = {
     },
     autocompleteCategory: async (
       _parent: Object,
-      _args: { search: string }
+      _args: { search: string },
+      context: Context
     ) => {
       if (!_args.search) {
         return []
       }
 
-      return prisma.category.findMany({
+      return context.prisma.category.findMany({
         where: {
           name: {
             startsWith: _args.search,
@@ -305,22 +313,34 @@ const resolvers = {
         },
       })
     },
-    accountById: async (_parent: Object, _args: { id: string }) => {
-      return await prisma.account.findUnique({
+    accountById: async (
+      _parent: Object,
+      _args: { id: string },
+      context: Context
+    ) => {
+      return await context.prisma.account.findUnique({
         where: {
           id: _args.id,
         },
       })
     },
-    categoryById: async (_parent: Object, _args: { id: string }) => {
-      return await prisma.category.findUnique({
+    categoryById: async (
+      _parent: Object,
+      _args: { id: string },
+      context: Context
+    ) => {
+      return await context.prisma.category.findUnique({
         where: {
           id: _args.id,
         },
       })
     },
-    transactionById: async (_parent: Object, _args: { id: string }) => {
-      return await prisma.transaction.findUnique({
+    transactionById: async (
+      _parent: Object,
+      _args: { id: string },
+      context: Context
+    ) => {
+      return await context.prisma.transaction.findUnique({
         where: {
           id: _args.id,
         },
@@ -334,7 +354,8 @@ const resolvers = {
   Mutation: {
     updateTransactionCategory: async (
       _parent: Object,
-      _args: { transactionId: string; categoryName: string }
+      _args: { transactionId: string; categoryName: string },
+      context: Context
     ) => {
       let randomColor = Math.floor(Math.random() * 16777215).toString(16)
 
@@ -350,7 +371,7 @@ const resolvers = {
         },
       }
 
-      const category = await prisma.category.upsert(categoryUpsert)
+      const category = await context.prisma.category.upsert(categoryUpsert)
 
       const accountUpdate: PrismaTypes.TransactionUpdateArgs = {
         where: {
@@ -365,7 +386,7 @@ const resolvers = {
         },
       }
 
-      return await prisma.transaction.update(accountUpdate)
+      return await context.prisma.transaction.update(accountUpdate)
     },
   },
 }

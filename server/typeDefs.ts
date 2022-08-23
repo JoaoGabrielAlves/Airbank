@@ -12,6 +12,8 @@ const typeDefs = gql`
       categoryId: String
       startingMonth: String
       endingMonth: String
+      sortField: String
+      sortDirection: String
     ): TransactionResponse
     autocompleteAccountBanks(search: String): [Account]
     autocompleteCategory(search: String): [Category]

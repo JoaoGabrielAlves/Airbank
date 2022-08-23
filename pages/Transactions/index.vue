@@ -91,8 +91,22 @@
       <template slot="header">
         <TableHead title="Reference" :isFirst="true" />
         <TableHead title="Category" />
-        <TableHead title="Date" />
-        <TableHead title="Amount" />
+        <TableHead
+          hasSort
+          :sortField="sortField"
+          :sortDirection="sortDirection"
+          field="date"
+          title="Date"
+          @click="updateSortFieldAndDirection"
+        />
+        <TableHead
+          hasSort
+          :sortField="sortField"
+          :sortDirection="sortDirection"
+          field="amount"
+          title="Amount"
+          @click="updateSortFieldAndDirection"
+        />
       </template>
       <template slot="body">
         <tr
@@ -155,6 +169,8 @@ export default Vue.extend({
       selectedCategoryId: '',
       startingMonth: '',
       endingMonth: '',
+      sortField: '',
+      sortDirection: '',
     }
   },
   head() {
@@ -172,6 +188,15 @@ export default Vue.extend({
   methods: {
     view(id: string) {
       this.$router.push(`/transactions/${id}`)
+    },
+    updateSortFieldAndDirection(
+      direction: 'asc' | 'desc',
+      field: 'date' | 'amount'
+    ) {
+      this.sortDirection = direction
+      this.sortField = field
+
+      this.applyFilters()
     },
     showMore(endCursor: string) {
       this.$apollo.queries.paginatedTransactions.fetchMore({
@@ -201,6 +226,8 @@ export default Vue.extend({
           categoryId: this.selectedCategoryId,
           startingMonth: this.startingMonth,
           endingMonth: this.endingMonth,
+          sortField: this.sortField,
+          sortDirection: this.sortDirection,
         },
         // @ts-ignore
         updateQuery: (previousResult, { fetchMoreResult }) => {
@@ -267,6 +294,8 @@ export default Vue.extend({
           $categoryId: String
           $startingMonth: String
           $endingMonth: String
+          $sortField: String
+          $sortDirection: String
         ) {
           paginatedTransactions(
             first: $linksFirst
@@ -276,6 +305,8 @@ export default Vue.extend({
             categoryId: $categoryId
             startingMonth: $startingMonth
             endingMonth: $endingMonth
+            sortField: $sortField
+            sortDirection: $sortDirection
           ) {
             pageInfo {
               endCursor

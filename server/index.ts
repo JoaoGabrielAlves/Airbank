@@ -5,8 +5,9 @@ const cors = require('cors')
 import typeDefs from './typeDefs'
 
 import resolvers from './resolvers'
+import { context } from './context'
 
-const server = new ApolloServer({ typeDefs, resolvers })
+const server = new ApolloServer({ typeDefs, resolvers, context })
 
 const app = express()
 app.use(
