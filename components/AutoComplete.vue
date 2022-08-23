@@ -166,7 +166,7 @@ export default Vue.extend({
         this.selectedOption = selected[this.optionValueKey]
         this.showList = false
         this.$emit('selected', selected[this.optionIdentifierKey])
-      } else if (this.hasMutation) {
+      } else if (this.hasMutation && this.search) {
         this.$emit('selected', this.search)
       }
     },
