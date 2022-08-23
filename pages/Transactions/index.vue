@@ -158,6 +158,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import gql from 'graphql-tag'
+import { PaginatedResponse, Account, Category } from '../../static/graphqlTypes'
 
 export default Vue.extend({
   data() {
@@ -206,8 +207,11 @@ export default Vue.extend({
           bank: this.bank,
           categoryId: this.selectedCategoryId,
         },
-        // @ts-ignore
-        updateQuery: (previousResult, { fetchMoreResult }) => {
+
+        updateQuery: (
+          previousResult: PaginatedResponse,
+          fetchMoreResult: PaginatedResponse
+        ) => {
           fetchMoreResult.paginatedTransactions.edges = [
             ...previousResult.paginatedTransactions.edges,
             ...fetchMoreResult.paginatedTransactions.edges,
@@ -229,8 +233,10 @@ export default Vue.extend({
           sortField: this.sortField,
           sortDirection: this.sortDirection,
         },
-        // @ts-ignore
-        updateQuery: (previousResult, { fetchMoreResult }) => {
+        updateQuery: (
+          previousResult: PaginatedResponse,
+          fetchMoreResult: PaginatedResponse
+        ) => {
           return fetchMoreResult
         },
       })
@@ -241,8 +247,10 @@ export default Vue.extend({
           search: this.bankSearch,
         },
 
-        // @ts-ignore
-        updateQuery: (previousResult, { fetchMoreResult }) => {
+        updateQuery: (
+          previousResult: Array<Account>,
+          fetchMoreResult: Array<Account>
+        ) => {
           return fetchMoreResult
         },
       })
@@ -253,8 +261,10 @@ export default Vue.extend({
           search: this.categorySearch,
         },
 
-        // @ts-ignore
-        updateQuery: (previousResult, { fetchMoreResult }) => {
+        updateQuery: (
+          previousResult: Array<Category>,
+          fetchMoreResult: Array<Category>
+        ) => {
           return fetchMoreResult
         },
       })

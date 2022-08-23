@@ -65,6 +65,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import gql from 'graphql-tag'
+import { Transaction, Account } from '../../../static/graphqlTypes'
 
 export default Vue.extend({
   data() {
@@ -104,8 +105,7 @@ export default Vue.extend({
           search: this.categorySearch,
         },
 
-        // @ts-ignore
-        updateQuery: (previousResult, { fetchMoreResult }) => {
+        updateQuery: (previousResult: Account, fetchMoreResult: Account) => {
           return fetchMoreResult
         },
       })
@@ -116,8 +116,10 @@ export default Vue.extend({
           search: this.categorySearch,
         },
 
-        // @ts-ignore
-        updateQuery: (previousResult, { fetchMoreResult }) => {
+        updateQuery: (
+          previousResult: Transaction,
+          fetchMoreResult: Transaction
+        ) => {
           return fetchMoreResult
         },
       })

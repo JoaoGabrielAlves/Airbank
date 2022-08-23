@@ -43,6 +43,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import gql from 'graphql-tag'
+import { PaginatedResponse } from '../../static/graphqlTypes'
 
 export default Vue.extend({
   head() {
@@ -108,8 +109,10 @@ export default Vue.extend({
           sortDirection: this.sortDirection,
         },
 
-        // @ts-ignore
-        updateQuery: (previousResult, { fetchMoreResult }) => {
+        updateQuery: (
+          previousResult: PaginatedResponse,
+          fetchMoreResult: PaginatedResponse
+        ) => {
           fetchMoreResult.paginatedCategories.edges = [
             ...previousResult.paginatedCategories.edges,
             ...fetchMoreResult.paginatedCategories.edges,
@@ -127,8 +130,11 @@ export default Vue.extend({
           sortField: this.sortField,
           sortDirection: this.sortDirection,
         },
-        // @ts-ignore
-        updateQuery: (previousResult, { fetchMoreResult }) => {
+
+        updateQuery: (
+          previousResult: PaginatedResponse,
+          fetchMoreResult: PaginatedResponse
+        ) => {
           return fetchMoreResult
         },
       })
