@@ -36,8 +36,9 @@
           optionValueKey="name"
           optionIdentifierKey="name"
           hasMutation
-          @update="categorySearch = $event"
+          @change="categorySearch = $event"
           @selected="selectedCategoryName = $event"
+          :selectedValue="transactionById?.Category?.name"
         />
         <button
           class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md"
@@ -88,7 +89,9 @@ export default Vue.extend({
   },
   watch: {
     selectedCategoryName() {
-      this.updateTransactionCategory()
+      if (this.selectedCategoryName) {
+        this.updateTransactionCategory()
+      }
     },
     categorySearch() {
       this.reloadAutocompleteCategory()
