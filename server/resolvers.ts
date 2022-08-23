@@ -11,26 +11,24 @@ const resolvers = {
     ) => {
       let queryResults = null
 
-      if (_args.after) {
-        queryResults = await prisma.account.findMany({
-          take: _args.first,
-          skip: 1,
-          cursor: {
+      const afterCursor = _args.after
+        ? {
             id: _args.after,
-          },
-        })
-      } else {
-        queryResults = await prisma.account.findMany({
-          take: _args.first,
-        })
-      }
+          }
+        : undefined
+
+      queryResults = await prisma.account.findMany({
+        take: _args.first,
+        skip: _args.after ? 1 : undefined,
+        cursor: afterCursor,
+      })
 
       if (queryResults.length > 0) {
         const lastAccountInResults = queryResults[queryResults.length - 1]
 
         const endCursor = lastAccountInResults.id
 
-        const secondQueryResults = await prisma.account.findMany({
+        const secondQueryCount = await prisma.account.count({
           take: _args.first,
           cursor: {
             id: endCursor,
@@ -40,7 +38,7 @@ const resolvers = {
         const result = {
           pageInfo: {
             endCursor: endCursor,
-            hasNextPage: secondQueryResults.length >= _args.first,
+            hasNextPage: secondQueryCount >= _args.first,
           },
 
           edges: queryResults.map((account) => ({
@@ -66,26 +64,24 @@ const resolvers = {
     ) => {
       let queryResults = null
 
-      if (_args.after) {
-        queryResults = await prisma.category.findMany({
-          take: _args.first,
-          skip: 1,
-          cursor: {
+      const afterCursor = _args.after
+        ? {
             id: _args.after,
-          },
-        })
-      } else {
-        queryResults = await prisma.category.findMany({
-          take: _args.first,
-        })
-      }
+          }
+        : undefined
+
+      queryResults = await prisma.category.findMany({
+        take: _args.first,
+        skip: _args.after ? 1 : undefined,
+        cursor: afterCursor,
+      })
 
       if (queryResults.length > 0) {
         const lastCategoryInResults = queryResults[queryResults.length - 1]
 
         const endCursor = lastCategoryInResults.id
 
-        const secondQueryResults = await prisma.category.findMany({
+        const secondQueryCount = await prisma.category.count({
           take: _args.first,
           cursor: {
             id: endCursor,
@@ -95,7 +91,7 @@ const resolvers = {
         const result = {
           pageInfo: {
             endCursor: endCursor,
-            hasNextPage: secondQueryResults.length >= _args.first,
+            hasNextPage: secondQueryCount >= _args.first,
           },
 
           edges: queryResults.map((category) => ({
@@ -149,198 +145,91 @@ const resolvers = {
 
       let endingMonth = _args.endingMonth != '' ? _args.endingMonth : undefined
 
-      if (_args.after) {
-        queryResults = await prisma.transaction.findMany({
-          take: _args.first,
-          skip: 1,
-          cursor: {
+      const afterCursor = _args.after
+        ? {
             id: _args.after,
+          }
+        : undefined
+
+      const whereQuery = {
+        OR: [
+          {
+            reference: {
+              search: search,
+            },
           },
-          include: {
-            Category: true,
+          {
+            date: {
+              search: search,
+            },
           },
-          where: {
-            OR: [
-              {
-                reference: {
-                  search: search,
-                },
-              },
-              {
-                date: {
-                  search: search,
-                },
-              },
-              {
-                amount: {
-                  search: search,
-                },
-              },
-              {
-                currency: {
-                  search: search,
-                },
-              },
-              {
-                Category: {
-                  name: {
-                    search: search,
-                  },
-                },
-              },
-              {
-                Account: {
-                  bank: {
-                    search: search,
-                  },
-                  name: {
-                    search: search,
-                  },
-                },
-              },
-            ],
-            AND: {
-              categoryId: categoryId,
-              Account: {
-                bank: bank,
-              },
-              date: {
-                gte: startingMonth,
-                lte: endingMonth,
+          {
+            amount: {
+              search: search,
+            },
+          },
+          {
+            currency: {
+              search: search,
+            },
+          },
+          {
+            Category: {
+              name: {
+                search: search,
               },
             },
           },
-        })
-      } else {
-        queryResults = await prisma.transaction.findMany({
-          take: _args.first,
-          include: {
-            Category: true,
-          },
-          where: {
-            OR: [
-              {
-                reference: {
-                  search: search,
-                },
+          {
+            Account: {
+              bank: {
+                search: search,
               },
-              {
-                date: {
-                  search: search,
-                },
-              },
-              {
-                amount: {
-                  search: search,
-                },
-              },
-              {
-                currency: {
-                  search: search,
-                },
-              },
-              {
-                Category: {
-                  name: {
-                    search: search,
-                  },
-                },
-              },
-              {
-                Account: {
-                  bank: {
-                    search: search,
-                  },
-                  name: {
-                    search: search,
-                  },
-                },
-              },
-            ],
-            AND: {
-              categoryId: categoryId,
-              Account: {
-                bank: bank,
-              },
-              date: {
-                gte: startingMonth,
-                lte: endingMonth,
+              name: {
+                search: search,
               },
             },
           },
-        })
+        ],
+        AND: {
+          categoryId: categoryId,
+          Account: {
+            bank: bank,
+          },
+          date: {
+            gte: startingMonth,
+            lte: endingMonth,
+          },
+        },
       }
+
+      queryResults = await prisma.transaction.findMany({
+        take: _args.first,
+        skip: _args.after ? 1 : undefined,
+        cursor: afterCursor,
+        include: {
+          Category: true,
+        },
+        where: whereQuery,
+      })
 
       if (queryResults.length > 0) {
         const lastTransactionInResults = queryResults[queryResults.length - 1]
 
         const endCursor = lastTransactionInResults.id
 
-        const secondQueryResults = await prisma.transaction.findMany({
+        const secondQueryResults = await prisma.transaction.count({
           take: _args.first,
           cursor: {
             id: endCursor,
           },
-          include: {
-            Category: true,
-          },
-          where: {
-            OR: [
-              {
-                reference: {
-                  search: search,
-                },
-              },
-              {
-                date: {
-                  search: search,
-                },
-              },
-              {
-                amount: {
-                  search: search,
-                },
-              },
-              {
-                currency: {
-                  search: search,
-                },
-              },
-              {
-                Category: {
-                  name: {
-                    search: search,
-                  },
-                },
-              },
-              {
-                Account: {
-                  bank: {
-                    search: search,
-                  },
-                  name: {
-                    search: search,
-                  },
-                },
-              },
-            ],
-            AND: {
-              categoryId: categoryId,
-              Account: {
-                bank: bank,
-              },
-              date: {
-                gte: startingMonth,
-                lte: endingMonth,
-              },
-            },
-          },
+          where: whereQuery,
         })
 
         const result = {
           pageInfo: {
             endCursor: endCursor,
-            hasNextPage: secondQueryResults.length >= _args.first,
+            hasNextPage: secondQueryResults >= _args.first,
           },
 
           edges: queryResults.map((transaction) => ({
@@ -393,6 +282,7 @@ const resolvers = {
         where: {
           bank: {
             startsWith: _args.search,
+            mode: 'insensitive',
           },
         },
         distinct: ['bank'],
@@ -410,6 +300,7 @@ const resolvers = {
         where: {
           name: {
             startsWith: _args.search,
+            mode: 'insensitive',
           },
         },
       })
