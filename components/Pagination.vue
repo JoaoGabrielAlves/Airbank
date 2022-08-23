@@ -10,7 +10,9 @@
       {{ disabled ? 'Loading...' : 'Load more' }}
     </button>
 
-    <span v-else> You've reached the end! </span>
+    <span v-else>
+      {{ disabled ? 'Loading...' : "You've reached the end!" }}
+    </span>
   </div>
 </template>
 
