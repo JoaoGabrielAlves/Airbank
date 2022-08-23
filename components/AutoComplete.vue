@@ -175,7 +175,7 @@ export default Vue.extend({
         this.showList = !this.showList
       }
     },
-    onKeydown(evt: any) {
+    onKeydown(evt: KeyboardEvent) {
       switch (evt.code) {
         case 'ArrowDown':
           evt.preventDefault()
