@@ -110,6 +110,12 @@
 <script lang="ts">
 import Vue from 'vue'
 
+type Option = {
+  [key in string]: string
+}
+
+type Options = Array<Option>
+
 export default Vue.extend({
   data() {
     return {
@@ -126,7 +132,9 @@ export default Vue.extend({
       type: Boolean,
     },
     name: String,
-    options: Array,
+    options: {
+      type: Array,
+    },
     optionIdentifierKey: String,
     optionValueKey: String,
     selectedValue: String,
@@ -159,7 +167,9 @@ export default Vue.extend({
   },
   methods: {
     handleSelected() {
-      const selected: any = this.options[this.arrowCounter]
+      const options: Options = this.options as Options
+
+      const selected: Option = options[this.arrowCounter]
 
       if (selected) {
         this.search = selected[this.optionValueKey]
