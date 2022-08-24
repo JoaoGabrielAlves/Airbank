@@ -89,7 +89,7 @@ export const resolvers = {
             },
             {
               amount: {
-                in: stringToFloat(search),
+                in: filterStringToFloat(search),
               },
             },
             {
@@ -217,14 +217,18 @@ function filterString(string: string) {
   return string != '' ? string : undefined
 }
 
-function stringToFloat(string: string | undefined) {
-  const nomNumbersOrOperators = /[^0-9.-]/g
-
+function filterStringToFloat(string: string | undefined) {
   if (typeof string == 'undefined') {
     return undefined
   }
 
-  return filterString(string.replace(nomNumbersOrOperators, ''))
+  const isValid = /^-?[0-9]\d*(\.\d+)?$/.test(string)
+
+  if (isValid) {
+    return string
+  }
+
+  return undefined
 }
 
 function stringToFulltextSearch(string: string | undefined) {
