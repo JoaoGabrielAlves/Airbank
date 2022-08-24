@@ -7,7 +7,7 @@ const resolvers = {
     paginatedAccounts: async (
       _parent: Object,
       _args: {
-        first: number
+        take: number
         after: string
         sortField: 'name' | 'bank'
         sortDirection: 'asc' | 'desc'
@@ -29,7 +29,7 @@ const resolvers = {
         : undefined
 
       queryResults = await context.prisma.account.findMany({
-        take: _args.first,
+        take: _args.take,
         skip: _args.after ? 1 : undefined,
         cursor: afterCursor,
         orderBy: orderBy,
@@ -41,7 +41,7 @@ const resolvers = {
         const endCursor = lastAccountInResults.id
 
         const secondQueryCount = await context.prisma.account.count({
-          take: _args.first,
+          take: _args.take,
           cursor: {
             id: endCursor,
           },
@@ -50,7 +50,7 @@ const resolvers = {
         const result = {
           pageInfo: {
             endCursor: endCursor,
-            hasNextPage: secondQueryCount >= _args.first,
+            hasNextPage: secondQueryCount >= _args.take,
           },
 
           edges: queryResults.map((account) => ({
@@ -73,7 +73,7 @@ const resolvers = {
     paginatedCategories: async (
       _parent: Object,
       _args: {
-        first: number
+        take: number
         after: string
         sortField: 'name'
         sortDirection: 'asc' | 'desc'
@@ -95,7 +95,7 @@ const resolvers = {
         : undefined
 
       queryResults = await context.prisma.category.findMany({
-        take: _args.first,
+        take: _args.take,
         skip: _args.after ? 1 : undefined,
         cursor: afterCursor,
         orderBy: orderBy,
@@ -107,7 +107,7 @@ const resolvers = {
         const endCursor = lastCategoryInResults.id
 
         const secondQueryCount = await context.prisma.category.count({
-          take: _args.first,
+          take: _args.take,
           cursor: {
             id: endCursor,
           },
@@ -116,7 +116,7 @@ const resolvers = {
         const result = {
           pageInfo: {
             endCursor: endCursor,
-            hasNextPage: secondQueryCount >= _args.first,
+            hasNextPage: secondQueryCount >= _args.take,
           },
 
           edges: queryResults.map((category) => ({
@@ -139,7 +139,7 @@ const resolvers = {
     paginatedTransactions: async (
       _parent: Object,
       _args: {
-        first: number
+        take: number
         after: string
         search: string
         bank: string
@@ -244,7 +244,7 @@ const resolvers = {
         : undefined
 
       queryResults = await context.prisma.transaction.findMany({
-        take: _args.first,
+        take: _args.take,
         skip: _args.after ? 1 : undefined,
         include: {
           Category: true,
@@ -260,7 +260,7 @@ const resolvers = {
         const endCursor = lastTransactionInResults.id
 
         const secondQueryCount = await context.prisma.transaction.count({
-          take: _args.first,
+          take: _args.take,
           cursor: {
             id: endCursor,
           },
@@ -270,7 +270,7 @@ const resolvers = {
         const result = {
           pageInfo: {
             endCursor: endCursor,
-            hasNextPage: secondQueryCount >= _args.first,
+            hasNextPage: secondQueryCount >= _args.take,
           },
 
           edges: queryResults.map((transaction) => ({

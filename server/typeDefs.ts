@@ -3,19 +3,19 @@ import { gql } from 'apollo-server-express'
 const typeDefs = gql`
   type Query {
     paginatedAccounts(
-      first: Int
+      take: Int
       after: String
       sortField: String
       sortDirection: String
     ): AccountResponse
     paginatedCategories(
-      first: Int
+      take: Int
       after: String
       sortField: String
       sortDirection: String
     ): CategoryResponse
     paginatedTransactions(
-      first: Int
+      take: Int
       after: String
       search: String
       bank: String

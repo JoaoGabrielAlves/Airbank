@@ -214,7 +214,7 @@ export default Vue.extend({
     applyFilters() {
       this.$apollo.queries.paginatedTransactions.fetchMore({
         variables: {
-          linksFirst: 10,
+          take: 10,
           linksAfter: '',
           search: this.search,
           bank: this.bank,
@@ -288,7 +288,7 @@ export default Vue.extend({
     paginatedTransactions: {
       query: gql`
         query (
-          $linksFirst: Int
+          $take: Int
           $linksAfter: String
           $search: String
           $bank: String
@@ -299,7 +299,7 @@ export default Vue.extend({
           $sortDirection: String
         ) {
           paginatedTransactions(
-            first: $linksFirst
+            take: $take
             after: $linksAfter
             search: $search
             bank: $bank
@@ -331,7 +331,7 @@ export default Vue.extend({
         }
       `,
       variables: {
-        linksFirst: 10,
+        take: 10,
         search: '',
       },
     },

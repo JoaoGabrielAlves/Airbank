@@ -69,13 +69,13 @@ export default Vue.extend({
     paginatedCategories: {
       query: gql`
         query (
-          $linksFirst: Int
+          $take: Int
           $linksAfter: String
           $sortField: String
           $sortDirection: String
         ) {
           paginatedCategories(
-            first: $linksFirst
+            take: $take
             after: $linksAfter
             sortField: $sortField
             sortDirection: $sortDirection
@@ -96,7 +96,7 @@ export default Vue.extend({
         }
       `,
       variables: {
-        linksFirst: 10,
+        take: 10,
       },
     },
   },
@@ -126,7 +126,7 @@ export default Vue.extend({
     applyFilters() {
       this.$apollo.queries.paginatedCategories.fetchMore({
         variables: {
-          linksFirst: 10,
+          take: 10,
           linksAfter: '',
           sortField: this.sortField,
           sortDirection: this.sortDirection,
