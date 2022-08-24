@@ -98,6 +98,7 @@
           field="date"
           title="Date"
           @click="updateSortFieldAndDirection"
+          :loading="$apollo.queries.paginatedTransactions.loading"
         />
         <TableHead
           hasSort
@@ -106,6 +107,7 @@
           field="amount"
           title="Amount"
           @click="updateSortFieldAndDirection"
+          :loading="$apollo.queries.paginatedTransactions.loading"
         />
       </template>
       <template slot="body">
@@ -249,7 +251,7 @@ export default Vue.extend({
 
         updateQuery: (
           previousResult: Array<Account>,
-          fetchMoreResult: Array<Account>
+          { fetchMoreResult }: { fetchMoreResult: Array<Account> }
         ) => {
           return fetchMoreResult
         },
@@ -263,7 +265,7 @@ export default Vue.extend({
 
         updateQuery: (
           previousResult: Array<Category>,
-          fetchMoreResult: Array<Category>
+          { fetchMoreResult }: { fetchMoreResult: Array<Category> }
         ) => {
           return fetchMoreResult
         },

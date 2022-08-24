@@ -14,6 +14,7 @@
           field="name"
           title="Name"
           @click="updateSortFieldAndDirection"
+          :loading="$apollo.queries.paginatedCategories.loading"
           :isFirst="true"
         />
         <TableHead title="Color" />

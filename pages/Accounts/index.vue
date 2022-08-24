@@ -14,6 +14,7 @@
           field="name"
           title="Name"
           @click="updateSortFieldAndDirection"
+          :loading="$apollo.queries.paginatedAccounts.loading"
           :isFirst="true"
         />
         <TableHead
@@ -23,6 +24,7 @@
           field="bank"
           title="Bank"
           @click="updateSortFieldAndDirection"
+          :loading="$apollo.queries.paginatedAccounts.loading"
           :isFirst="true"
         />
       </template>

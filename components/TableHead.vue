@@ -7,7 +7,8 @@
     <div v-if="hasSort" class="group inline-flex">
       {{ title }}
       <span
-        class="text-gray-600 group-hover:text-gray-900 cursor-pointer"
+        class="text-gray-600 group-hover:text-gray-900"
+        :class="!loading ? 'cursor-pointer' : ''"
         @click="updateSortFieldAndDirection()"
       >
         <template v-if="sortField == field">
@@ -76,12 +77,15 @@ export default Vue.extend({
     sortDirection: String,
     sortField: String,
     field: String,
+    loading: Boolean,
   },
   methods: {
     updateSortFieldAndDirection() {
-      const direction = this.sortDirection === 'asc' ? 'desc' : 'asc'
+      if (!this.loading) {
+        const direction = this.sortDirection === 'asc' ? 'desc' : 'asc'
 
-      this.$emit('click', direction, this.field)
+        this.$emit('click', direction, this.field)
+      }
     },
   },
 })
