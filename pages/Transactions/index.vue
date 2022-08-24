@@ -102,7 +102,15 @@
           @click="updateSortFieldAndDirection"
           :loading="$apollo.queries.paginatedTransactions.loading"
         />
-        <TableHead field="amount" title="Amount" />
+        <TableHead
+          hasSort
+          :sortField="sortField"
+          :sortDirection="sortDirection"
+          field="amount"
+          title="Amount"
+          @click="updateSortFieldAndDirection"
+          :loading="$apollo.queries.paginatedTransactions.loading"
+        />
       </template>
       <template slot="body">
         <tr
@@ -174,6 +182,7 @@ export default Vue.extend({
       endingMonth: '',
       invalidStartingMonth: false,
       invalidEndingMonth: false,
+      page: 1,
       sortField: '',
       sortDirection: '',
     }
@@ -201,17 +210,10 @@ export default Vue.extend({
       this.applyFilters()
     },
     showMore(endCursor: string) {
+      this.page += 1
+
       this.$apollo.queries.paginatedTransactions.fetchMore({
-        variables: {
-          linksAfter: endCursor,
-          search: this.search,
-          bank: this.bank,
-          categoryId: this.selectedCategoryId,
-          startingMonth: this.startingMonth,
-          endingMonth: this.endingMonth,
-          sortField: this.sortField,
-          sortDirection: this.sortDirection,
-        },
+        variables: this.getPaginatedTransactionVariables(endCursor),
 
         updateQuery: (
           previousResult: TransactionPaginatedReponse,
@@ -227,17 +229,7 @@ export default Vue.extend({
     },
     applyFilters() {
       this.$apollo.queries.paginatedTransactions.fetchMore({
-        variables: {
-          take: 10,
-          linksAfter: '',
-          search: this.search,
-          bank: this.bank,
-          categoryId: this.selectedCategoryId,
-          startingMonth: this.startingMonth,
-          endingMonth: this.endingMonth,
-          sortField: this.sortField,
-          sortDirection: this.sortDirection,
-        },
+        variables: this.getPaginatedTransactionVariables(),
         updateQuery: (
           previousResult: TransactionPaginatedReponse,
           { fetchMoreResult }: { fetchMoreResult: TransactionPaginatedReponse }
@@ -291,6 +283,37 @@ export default Vue.extend({
 
       return date.toISOString().startsWith(dateStr)
     },
+    getPaginatedTransactionVariables(endCursor = false as false | string) {
+      let variables = {
+        search: this.search,
+        bank: this.bank,
+        categoryId: this.selectedCategoryId,
+        startingMonth: this.startingMonth,
+        endingMonth: this.endingMonth,
+        sortField: this.sortField,
+        sortDirection: this.sortDirection,
+      } as {
+        page: number
+        skip: string
+        search: string
+        bank: string
+        categoryId: string
+        startingMonth: string
+        endingMonth: string
+        sortField: string
+        sortDirection: string
+      }
+
+      if (endCursor) {
+        variables.skip = endCursor
+      }
+
+      if (this.sortField) {
+        variables.page = this.page
+      }
+
+      return variables
+    },
   },
   watch: {
     search() {
@@ -339,7 +362,8 @@ export default Vue.extend({
       query: gql`
         query (
           $take: Int
-          $linksAfter: String
+          $page: Int
+          $skip: String
           $search: String
           $bank: String
           $categoryId: String
@@ -350,7 +374,8 @@ export default Vue.extend({
         ) {
           paginatedTransactions(
             take: $take
-            after: $linksAfter
+            page: $page
+            skip: $skip
             search: $search
             bank: $bank
             categoryId: $categoryId

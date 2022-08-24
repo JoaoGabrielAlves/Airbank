@@ -1,12 +1,14 @@
 import { gql } from 'apollo-server-express'
 import { Context } from '../context'
 import { randomUUID } from 'crypto'
+import { Prisma } from '@prisma/client'
 
 export const typeDef = gql`
   extend type Query {
     paginatedTransactions(
       take: Int
-      after: String
+      page: Int
+      skip: String
       search: String
       bank: String
       categoryId: String
@@ -49,25 +51,26 @@ export const typeDef = gql`
   }
 `
 
+type paginatedTransactionsArgs = {
+  take: number
+  skip: string
+  page: number
+  search: string
+  bank: string
+  categoryId: string
+  startingMonth: string
+  endingMonth: string
+  sortField: 'date' | 'amount'
+  sortDirection: 'asc' | 'desc'
+}
+
 export const resolvers = {
   Query: {
     paginatedTransactions: async (
       _parent: Object,
-      _args: {
-        take: number
-        after: string
-        search: string
-        bank: string
-        categoryId: string
-        startingMonth: string
-        endingMonth: string
-        sortField: 'date'
-        sortDirection: 'asc' | 'desc'
-      },
+      _args: paginatedTransactionsArgs,
       context: Context
     ) => {
-      let queryResults = null
-
       const search = filterString(_args.search)
 
       const fullTextSearch = stringToFulltextSearch(search)
@@ -145,64 +148,11 @@ export const resolvers = {
         AND: filterQuery,
       }
 
-      const afterCursor = _args.after
-        ? {
-            id: _args.after,
-          }
-        : undefined
-
-      queryResults = await context.prisma.transaction.findMany({
-        take: _args.take,
-        skip: _args.after ? 1 : undefined,
-        include: {
-          Category: true,
-        },
-        cursor: afterCursor,
-        where: whereQuery,
-        orderBy: _args.sortField
-          ? {
-              [_args.sortField]: _args.sortDirection,
-            }
-          : {
-              id: 'asc',
-            },
-      })
-
-      if (queryResults.length > 0) {
-        const lastTransactionInResults = queryResults[queryResults.length - 1]
-
-        const endCursor = lastTransactionInResults.id
-
-        const secondQueryCount = await context.prisma.transaction.count({
-          take: _args.take,
-          cursor: {
-            id: endCursor,
-          },
-          where: whereQuery,
-        })
-
-        const result = {
-          pageInfo: {
-            endCursor: endCursor,
-            hasNextPage: secondQueryCount >= _args.take,
-          },
-
-          edges: queryResults.map((transaction) => ({
-            cursor: transaction.id,
-            node: transaction,
-          })),
-        }
-
-        return result
-      } else {
-        return {
-          pageInfo: {
-            endCursor: null,
-            hasNextPage: false,
-          },
-          edges: [],
-        }
+      if (_args.page) {
+        return offsetPaginate(_args, context, whereQuery)
       }
+
+      return cursorPaginate(_args, context, whereQuery)
     },
     transactionsCount: async (_parent: Object, _args: {}, context: Context) => {
       return await context.prisma.transaction.count({
@@ -316,4 +266,121 @@ function getDateFilter(
   }
 
   return filter
+}
+
+async function offsetPaginate(
+  _args: paginatedTransactionsArgs,
+  context: Context,
+  whereQuery: Prisma.TransactionWhereInput
+) {
+  let queryResults = null
+
+  const skip = _args.take * (_args.page - 1)
+
+  queryResults = await context.prisma.transaction.findMany({
+    take: _args.take,
+    skip: skip,
+    include: {
+      Category: true,
+    },
+    where: whereQuery,
+    orderBy: _args.sortField
+      ? {
+          [_args.sortField]: _args.sortDirection,
+        }
+      : {
+          id: 'asc',
+        },
+  })
+
+  if (queryResults.length > 0) {
+    const transactionCount = await context.prisma.transaction.count({
+      where: whereQuery,
+    })
+
+    const result = {
+      pageInfo: {
+        hasNextPage: transactionCount > skip + _args.take,
+      },
+
+      edges: queryResults.map((transaction) => ({
+        cursor: transaction.id,
+        node: transaction,
+      })),
+    }
+
+    return result
+  } else {
+    return {
+      pageInfo: {
+        endCursor: null,
+        hasNextPage: false,
+      },
+      edges: [],
+    }
+  }
+}
+
+async function cursorPaginate(
+  _args: paginatedTransactionsArgs,
+  context: Context,
+  whereQuery: Prisma.TransactionWhereInput
+) {
+  let queryResults = null
+
+  queryResults = await context.prisma.transaction.findMany({
+    take: _args.take,
+    skip: _args.skip ? 1 : undefined,
+    include: {
+      Category: true,
+    },
+    cursor: _args.skip
+      ? {
+          id: _args.skip,
+        }
+      : undefined,
+    where: whereQuery,
+    orderBy: {
+      id: 'asc',
+    },
+  })
+
+  if (queryResults.length > 0) {
+    const lastTransactionInResults = queryResults[queryResults.length - 1]
+
+    const endCursor = lastTransactionInResults.id
+
+    const secondQueryCount = await context.prisma.transaction.count({
+      take: _args.take,
+      cursor: {
+        id: endCursor,
+      },
+      where: whereQuery,
+      orderBy: {
+        id: 'asc',
+      },
+    })
+
+    const result = {
+      pageInfo: {
+        endCursor: endCursor,
+        hasNextPage: secondQueryCount >= _args.take,
+      },
+
+      edges: queryResults.map((transaction) => ({
+        cursor: transaction.id,
+        node: transaction,
+      })),
+    }
+
+    return result
+  } else {
+    return {
+      pageInfo: {
+        endCursor: null,
+        hasNextPage: false,
+      },
+      edges: [],
+    }
+  }
 }
