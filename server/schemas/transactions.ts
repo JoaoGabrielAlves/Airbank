@@ -2,6 +2,7 @@ import { gql } from 'apollo-server-express'
 import { Context } from '../context'
 import { randomUUID } from 'crypto'
 import { Prisma } from '@prisma/client'
+import moment from 'moment'
 
 export const typeDef = gql`
   extend type Query {
@@ -98,6 +99,9 @@ export const resolvers = {
                   startsWith: search,
                 },
               },
+            },
+            {
+              date: getDateSearch(search),
             },
             {
               Account: {
@@ -217,11 +221,7 @@ function filterString(string: string) {
   return string != '' ? string : undefined
 }
 
-function filterStringToFloat(string: string | undefined) {
-  if (typeof string == 'undefined') {
-    return undefined
-  }
-
+function filterStringToFloat(string: string) {
   const isValid = /^-?[0-9]\d*(\.\d+)?$/.test(string)
 
   if (isValid) {
@@ -241,6 +241,27 @@ function stringToFulltextSearch(string: string | undefined) {
         .split(/\s+/)
         .join(' <-> ')
     : undefined
+}
+
+function getDateSearch(search: string) {
+  const isValid =
+    moment(search, 'YYYY-MM-DD', true).isValid() ||
+    moment(search, 'DD/MM/YY', true).isValid()
+
+  if (!isValid) {
+    return undefined
+  }
+
+  const date = new Date(search)
+
+  const startOfTheDay = new Date(date.setUTCHours(0, 0, 0, 0)).toISOString()
+
+  const endOfTheDay = new Date(date.setUTCHours(23, 59, 59, 999)).toISOString()
+
+  return {
+    gte: startOfTheDay,
+    lte: endOfTheDay,
+  }
 }
 
 function getDateFilter(
