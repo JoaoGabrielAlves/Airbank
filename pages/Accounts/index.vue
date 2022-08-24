@@ -44,7 +44,7 @@
         </tr>
       </template>
     </Table>
-    <Pagination :resource="paginatedAccounts" @showMore="showMore" />
+    <Pagination :resource="paginatedAccounts" @showMore="nextPage" />
   </div>
 </template>
 
@@ -68,28 +68,27 @@ export default Vue.extend({
   data: () => ({
     sortField: '',
     sortDirection: '',
+    page: 1,
   }),
   apollo: {
     paginatedAccounts: {
       query: gql`
         query (
           $take: Int
-          $linksAfter: String
+          $page: Int!
           $sortField: String
           $sortDirection: String
         ) {
           paginatedAccounts(
             take: $take
-            after: $linksAfter
+            page: $page
             sortField: $sortField
             sortDirection: $sortDirection
           ) {
             pageInfo {
-              endCursor
               hasNextPage
             }
             edges {
-              cursor
               node {
                 id
                 name
@@ -101,15 +100,19 @@ export default Vue.extend({
       `,
       variables: {
         take: 10,
+        page: 1,
       },
     },
   },
   methods: {
-    showMore(endCursor: string) {
+    nextPage() {
+      this.page += 1
+      this.showMore()
+    },
+    showMore() {
       this.$apollo.queries.paginatedAccounts.fetchMore({
         variables: {
-          linksAfter: endCursor,
-          previousEndCursor: endCursor,
+          page: this.page,
         },
 
         updateQuery: (previousResult, { fetchMoreResult }) => {
@@ -123,9 +126,12 @@ export default Vue.extend({
       })
     },
     applyFilters() {
+      this.page = 1
+
       this.$apollo.queries.paginatedAccounts.fetchMore({
         variables: {
           take: 10,
+          page: 1,
           sortField: this.sortField,
           sortDirection: this.sortDirection,
         },

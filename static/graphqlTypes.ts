@@ -23,22 +23,39 @@ export type Count = {
   _all: number
 }
 
-type PageInfo = {
+type OffsetPaginationPageInfo = {
+  hasNextPage: boolean
+}
+
+type CursorPaginationPageInfo = {
   endCursor: string
   hasNextPage: boolean
 }
 
-type PaginatedResponseKey =
-  | 'paginatedCategories'
-  | 'paginatedAccounts'
-  | 'paginatedTransactions'
+export type CategoryPaginatedResponse = {
+  paginatedCategories: {
+    pageInfo: OffsetPaginationPageInfo
+    edges: Array<{
+      node: Account
+    }>
+  }
+}
 
-export type PaginatedResponse = {
-  [key in PaginatedResponseKey]: {
-    pageInfo: PageInfo
+export type AccountPaginatedResponse = {
+  paginatedAccounts: {
+    pageInfo: OffsetPaginationPageInfo
+    edges: Array<{
+      node: Account
+    }>
+  }
+}
+
+export type TransactionPaginatedReponse = {
+  paginatedTransactions: {
+    pageInfo: CursorPaginationPageInfo
     edges: Array<{
       cursor: string
-      node: Category | Account | Transaction
+      node: Transaction
     }>
   }
 }

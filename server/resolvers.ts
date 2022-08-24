@@ -8,7 +8,7 @@ const resolvers = {
       _parent: Object,
       _args: {
         take: number
-        after: string
+        page: number
         sortField: 'name' | 'bank'
         sortDirection: 'asc' | 'desc'
       },
@@ -16,41 +16,26 @@ const resolvers = {
     ) => {
       let queryResults = null
 
-      const afterCursor = _args.after
-        ? {
-            id: _args.after,
-          }
-        : undefined
-
       const orderBy = _args.sortField
         ? {
             [_args.sortField]: _args.sortDirection,
           }
         : undefined
 
+      const skip = _args.take * (_args.page - 1)
+
       queryResults = await context.prisma.account.findMany({
         take: _args.take,
-        skip: _args.after ? 1 : undefined,
-        cursor: afterCursor,
+        skip: skip,
         orderBy: orderBy,
       })
 
       if (queryResults.length > 0) {
-        const lastAccountInResults = queryResults[queryResults.length - 1]
-
-        const endCursor = lastAccountInResults.id
-
-        const secondQueryCount = await context.prisma.account.count({
-          take: _args.take,
-          cursor: {
-            id: endCursor,
-          },
-        })
+        const accountsCount = await context.prisma.account.count()
 
         const result = {
           pageInfo: {
-            endCursor: endCursor,
-            hasNextPage: secondQueryCount >= _args.take,
+            hasNextPage: accountsCount > skip + _args.take,
           },
 
           edges: queryResults.map((account) => ({
@@ -74,7 +59,7 @@ const resolvers = {
       _parent: Object,
       _args: {
         take: number
-        after: string
+        page: number
         sortField: 'name'
         sortDirection: 'asc' | 'desc'
       },
@@ -82,41 +67,26 @@ const resolvers = {
     ) => {
       let queryResults = null
 
-      const afterCursor = _args.after
-        ? {
-            id: _args.after,
-          }
-        : undefined
-
       const orderBy = _args.sortField
         ? {
             [_args.sortField]: _args.sortDirection,
           }
         : undefined
 
+      const skip = _args.take * (_args.page - 1)
+
       queryResults = await context.prisma.category.findMany({
         take: _args.take,
-        skip: _args.after ? 1 : undefined,
-        cursor: afterCursor,
+        skip: skip,
         orderBy: orderBy,
       })
 
       if (queryResults.length > 0) {
-        const lastCategoryInResults = queryResults[queryResults.length - 1]
-
-        const endCursor = lastCategoryInResults.id
-
-        const secondQueryCount = await context.prisma.category.count({
-          take: _args.take,
-          cursor: {
-            id: endCursor,
-          },
-        })
+        const categoriesCount = await context.prisma.category.count()
 
         const result = {
           pageInfo: {
-            endCursor: endCursor,
-            hasNextPage: secondQueryCount >= _args.take,
+            hasNextPage: categoriesCount > skip + _args.take,
           },
 
           edges: queryResults.map((category) => ({

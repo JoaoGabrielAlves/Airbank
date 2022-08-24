@@ -4,13 +4,13 @@ const typeDefs = gql`
   type Query {
     paginatedAccounts(
       take: Int
-      after: String
+      page: Int!
       sortField: String
       sortDirection: String
     ): AccountResponse
     paginatedCategories(
       take: Int
-      after: String
+      page: Int!
       sortField: String
       sortDirection: String
     ): CategoryResponse
@@ -57,28 +57,30 @@ const typeDefs = gql`
     Account: Account
   }
 
-  type PageInfo {
+  type OffsetPaginationInfo {
+    hasNextPage: Boolean
+  }
+
+  type CursorPaginationPageInfo {
     endCursor: String
     hasNextPage: Boolean
   }
 
   type AccountEdge {
-    cursor: String
     node: Account
   }
 
   type AccountResponse {
-    pageInfo: PageInfo
+    pageInfo: OffsetPaginationInfo
     edges: [AccountEdge]
   }
 
   type CategoryEdge {
-    cursor: String
     node: Category
   }
 
   type CategoryResponse {
-    pageInfo: PageInfo
+    pageInfo: OffsetPaginationInfo
     edges: [CategoryEdge]
   }
 
@@ -88,7 +90,7 @@ const typeDefs = gql`
   }
 
   type TransactionResponse {
-    pageInfo: PageInfo
+    pageInfo: CursorPaginationPageInfo
     edges: [TransactionEdge]
   }
 

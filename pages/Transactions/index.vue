@@ -152,7 +152,11 @@
 <script lang="ts">
 import Vue from 'vue'
 import gql from 'graphql-tag'
-import { PaginatedResponse, Account, Category } from '../../static/graphqlTypes'
+import {
+  TransactionPaginatedReponse,
+  Account,
+  Category,
+} from '../../static/graphqlTypes'
 
 export default Vue.extend({
   data() {
@@ -200,8 +204,8 @@ export default Vue.extend({
         },
 
         updateQuery: (
-          previousResult: PaginatedResponse,
-          { fetchMoreResult }: { fetchMoreResult: PaginatedResponse }
+          previousResult: TransactionPaginatedReponse,
+          { fetchMoreResult }: { fetchMoreResult: TransactionPaginatedReponse }
         ) => {
           fetchMoreResult.paginatedTransactions.edges = [
             ...previousResult.paginatedTransactions.edges,
@@ -225,8 +229,8 @@ export default Vue.extend({
           sortDirection: this.sortDirection,
         },
         updateQuery: (
-          previousResult: PaginatedResponse,
-          { fetchMoreResult }: { fetchMoreResult: PaginatedResponse }
+          previousResult: TransactionPaginatedReponse,
+          { fetchMoreResult }: { fetchMoreResult: TransactionPaginatedReponse }
         ) => {
           return fetchMoreResult
         },

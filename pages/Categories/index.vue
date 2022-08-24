@@ -37,14 +37,14 @@
         </tr>
       </template>
     </Table>
-    <Pagination :resource="paginatedCategories" @showMore="showMore" />
+    <Pagination :resource="paginatedCategories" @showMore="nextPage" />
   </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
 import gql from 'graphql-tag'
-import { PaginatedResponse } from '../../static/graphqlTypes'
+import { CategoryPaginatedResponse } from '../../static/graphqlTypes'
 
 export default Vue.extend({
   head() {
@@ -63,6 +63,7 @@ export default Vue.extend({
     return {
       sortField: '',
       sortDirection: '',
+      page: 1,
     }
   },
   apollo: {
@@ -70,22 +71,20 @@ export default Vue.extend({
       query: gql`
         query (
           $take: Int
-          $linksAfter: String
+          $page: Int!
           $sortField: String
           $sortDirection: String
         ) {
           paginatedCategories(
             take: $take
-            after: $linksAfter
+            page: $page
             sortField: $sortField
             sortDirection: $sortDirection
           ) {
             pageInfo {
-              endCursor
               hasNextPage
             }
             edges {
-              cursor
               node {
                 id
                 name
@@ -97,22 +96,26 @@ export default Vue.extend({
       `,
       variables: {
         take: 10,
+        page: 1,
       },
     },
   },
   methods: {
-    showMore(endCursor: string) {
+    nextPage() {
+      this.page += 1
+      this.showMore()
+    },
+    showMore() {
       this.$apollo.queries.paginatedCategories.fetchMore({
         variables: {
-          linksAfter: endCursor,
-          previousEndCursor: endCursor,
+          page: this.page,
           sortField: this.sortField,
           sortDirection: this.sortDirection,
         },
 
         updateQuery: (
-          previousResult: PaginatedResponse,
-          { fetchMoreResult }: { fetchMoreResult: PaginatedResponse }
+          previousResult: CategoryPaginatedResponse,
+          { fetchMoreResult }: { fetchMoreResult: CategoryPaginatedResponse }
         ) => {
           fetchMoreResult.paginatedCategories.edges = [
             ...previousResult.paginatedCategories.edges,
@@ -124,17 +127,19 @@ export default Vue.extend({
       })
     },
     applyFilters() {
+      this.page = 1
+
       this.$apollo.queries.paginatedCategories.fetchMore({
         variables: {
           take: 10,
-          linksAfter: '',
+          page: 1,
           sortField: this.sortField,
           sortDirection: this.sortDirection,
         },
 
         updateQuery: (
-          previousResult: PaginatedResponse,
-          { fetchMoreResult }: { fetchMoreResult: PaginatedResponse }
+          previousResult: CategoryPaginatedResponse,
+          { fetchMoreResult }: { fetchMoreResult: CategoryPaginatedResponse }
         ) => {
           return fetchMoreResult
         },
