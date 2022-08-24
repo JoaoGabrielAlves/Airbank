@@ -146,7 +146,7 @@ const resolvers = {
         categoryId: string
         startingMonth: string
         endingMonth: string
-        sortField: 'amount' | 'date' | 'id'
+        sortField: 'date'
         sortDirection: 'asc' | 'desc'
       },
       context: Context
@@ -161,8 +161,51 @@ const resolvers = {
               ?.replace(tsquerySpecialChars, ' ')
               .trim()
               .split(/\s+/)
-              .join(' | ')
+              .join(' <-> ')
           : undefined
+
+      const searchQuery = search
+        ? [
+            {
+              reference: {
+                search: search,
+              },
+            },
+            {
+              date: {
+                search: search,
+              },
+            },
+            {
+              currency: {
+                search: search,
+              },
+            },
+            {
+              Category: {
+                name: {
+                  search: search,
+                },
+              },
+            },
+            {
+              Account: {
+                bank: {
+                  search: search,
+                },
+                name: {
+                  search: search,
+                },
+              },
+            },
+          ]
+        : undefined
+
+      const afterCursor = _args.after
+        ? {
+            id: _args.after,
+          }
+        : undefined
 
       let categoryId = _args.categoryId != '' ? _args.categoryId : undefined
 
@@ -173,57 +216,25 @@ const resolvers = {
 
       let endingMonth = _args.endingMonth != '' ? _args.endingMonth : undefined
 
-      const afterCursor = _args.after
+      const hasFilter =
+        !!categoryId || !!bank || !!startingMonth || !!endingMonth
+
+      const filterQuery = hasFilter
         ? {
-            id: _args.after,
+            categoryId: categoryId,
+            Account: {
+              bank: bank,
+            },
+            date: {
+              gte: startingMonth,
+              lte: endingMonth,
+            },
           }
         : undefined
 
       const whereQuery = {
-        OR: [
-          {
-            reference: {
-              search: search,
-            },
-          },
-          {
-            date: {
-              search: search,
-            },
-          },
-          {
-            currency: {
-              search: search,
-            },
-          },
-          {
-            Category: {
-              name: {
-                search: search,
-              },
-            },
-          },
-          {
-            Account: {
-              bank: {
-                search: search,
-              },
-              name: {
-                search: search,
-              },
-            },
-          },
-        ],
-        AND: {
-          categoryId: categoryId,
-          Account: {
-            bank: bank,
-          },
-          date: {
-            gte: startingMonth,
-            lte: endingMonth,
-          },
-        },
+        OR: searchQuery,
+        AND: filterQuery,
       }
 
       const orderBy = _args.sortField
@@ -235,10 +246,10 @@ const resolvers = {
       queryResults = await context.prisma.transaction.findMany({
         take: _args.first,
         skip: _args.after ? 1 : undefined,
-        cursor: afterCursor,
         include: {
           Category: true,
         },
+        cursor: afterCursor,
         where: whereQuery,
         orderBy: orderBy,
       })
@@ -248,7 +259,7 @@ const resolvers = {
 
         const endCursor = lastTransactionInResults.id
 
-        const secondQueryResults = await context.prisma.transaction.count({
+        const secondQueryCount = await context.prisma.transaction.count({
           take: _args.first,
           cursor: {
             id: endCursor,
@@ -259,7 +270,7 @@ const resolvers = {
         const result = {
           pageInfo: {
             endCursor: endCursor,
-            hasNextPage: secondQueryResults >= _args.first,
+            hasNextPage: secondQueryCount >= _args.first,
           },
 
           edges: queryResults.map((transaction) => ({

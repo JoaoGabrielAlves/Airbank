@@ -100,15 +100,7 @@
           @click="updateSortFieldAndDirection"
           :loading="$apollo.queries.paginatedTransactions.loading"
         />
-        <TableHead
-          hasSort
-          :sortField="sortField"
-          :sortDirection="sortDirection"
-          field="amount"
-          title="Amount"
-          @click="updateSortFieldAndDirection"
-          :loading="$apollo.queries.paginatedTransactions.loading"
-        />
+        <TableHead field="amount" title="Amount" />
       </template>
       <template slot="body">
         <tr
@@ -192,10 +184,7 @@ export default Vue.extend({
     view(id: string) {
       this.$router.push(`/transactions/${id}`)
     },
-    updateSortFieldAndDirection(
-      direction: 'asc' | 'desc',
-      field: 'date' | 'amount'
-    ) {
+    updateSortFieldAndDirection(direction: 'asc' | 'desc', field: 'date') {
       this.sortDirection = direction
       this.sortField = field
 
