@@ -207,6 +207,10 @@ export default Vue.extend({
           search: this.search,
           bank: this.bank,
           categoryId: this.selectedCategoryId,
+          startingMonth: this.startingMonth,
+          endingMonth: this.endingMonth,
+          sortField: this.sortField,
+          sortDirection: this.sortDirection,
         },
 
         updateQuery: (

@@ -1,6 +1,5 @@
 import { gql } from 'apollo-server-express'
 import { Context } from '../context'
-import { Prisma as PrismaTypes } from '@prisma/client'
 import { randomUUID } from 'crypto'
 
 export const typeDef = gql`
@@ -152,12 +151,6 @@ export const resolvers = {
           }
         : undefined
 
-      const orderBy = _args.sortField
-        ? {
-            [_args.sortField]: _args.sortDirection,
-          }
-        : undefined
-
       queryResults = await context.prisma.transaction.findMany({
         take: _args.take,
         skip: _args.after ? 1 : undefined,
@@ -166,7 +159,13 @@ export const resolvers = {
         },
         cursor: afterCursor,
         where: whereQuery,
-        orderBy: orderBy,
+        orderBy: _args.sortField
+          ? {
+              [_args.sortField]: _args.sortDirection,
+            }
+          : {
+              id: 'asc',
+            },
       })
 
       if (queryResults.length > 0) {
@@ -305,7 +304,15 @@ function getDateFilter(
   }
 
   if (endingMonth) {
-    filter.lte = new Date(endingMonth).toISOString()
+    let endDateBegningOfTheMonth = new Date(endingMonth)
+
+    let endDateEndOfTheMonth = new Date(
+      endDateBegningOfTheMonth.getFullYear(),
+      endDateBegningOfTheMonth.getMonth() + 2,
+      0
+    )
+
+    filter.lte = endDateEndOfTheMonth.toISOString()
   }
 
   return filter
