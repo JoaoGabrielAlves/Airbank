@@ -111,7 +111,7 @@ export default Vue.extend({
 
         updateQuery: (
           previousResult: PaginatedResponse,
-          fetchMoreResult: PaginatedResponse
+          { fetchMoreResult }: { fetchMoreResult: PaginatedResponse }
         ) => {
           fetchMoreResult.paginatedCategories.edges = [
             ...previousResult.paginatedCategories.edges,
@@ -133,7 +133,7 @@ export default Vue.extend({
 
         updateQuery: (
           previousResult: PaginatedResponse,
-          fetchMoreResult: PaginatedResponse
+          { fetchMoreResult }: { fetchMoreResult: PaginatedResponse }
         ) => {
           return fetchMoreResult
         },

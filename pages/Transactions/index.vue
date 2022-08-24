@@ -210,7 +210,7 @@ export default Vue.extend({
 
         updateQuery: (
           previousResult: PaginatedResponse,
-          fetchMoreResult: PaginatedResponse
+          { fetchMoreResult }: { fetchMoreResult: PaginatedResponse }
         ) => {
           fetchMoreResult.paginatedTransactions.edges = [
             ...previousResult.paginatedTransactions.edges,
@@ -235,7 +235,7 @@ export default Vue.extend({
         },
         updateQuery: (
           previousResult: PaginatedResponse,
-          fetchMoreResult: PaginatedResponse
+          { fetchMoreResult }: { fetchMoreResult: PaginatedResponse }
         ) => {
           return fetchMoreResult
         },

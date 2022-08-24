@@ -124,7 +124,6 @@ export default Vue.extend({
       this.$apollo.queries.paginatedAccounts.fetchMore({
         variables: {
           linksFirst: 10,
-          linksAfter: '',
           sortField: this.sortField,
           sortDirection: this.sortDirection,
         },
