@@ -86,11 +86,6 @@ export const resolvers = {
               },
             },
             {
-              date: {
-                startsWith: search,
-              },
-            },
-            {
               amount: {
                 in: stringToFloat(search),
               },
@@ -306,11 +301,11 @@ function getDateFilter(
   let filter = {} as { gte: string; lte: string }
 
   if (startingMonth) {
-    filter.gte = startingMonth
+    filter.gte = new Date(startingMonth).toISOString()
   }
 
   if (endingMonth) {
-    filter.lte = endingMonth
+    filter.lte = new Date(endingMonth).toISOString()
   }
 
   return filter

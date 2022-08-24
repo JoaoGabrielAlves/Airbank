@@ -47,6 +47,7 @@
             name="starting_month"
             @change="startingMonth = $event"
             :disabled="$apollo.queries.paginatedTransactions.loading"
+            :isInvalid="this.invalidStartingMonth"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -70,6 +71,7 @@
             name="ending_month"
             @change="endingMonth = $event"
             :disabled="$apollo.queries.paginatedTransactions.loading"
+            :isInvalid="this.invalidEndingMonth"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -158,6 +160,8 @@ import {
   Category,
 } from '../../static/graphqlTypes'
 
+const dateRegex = /^\d{4}-\d{2}-\d{2}$/
+
 export default Vue.extend({
   data() {
     return {
@@ -168,6 +172,8 @@ export default Vue.extend({
       selectedCategoryId: '',
       startingMonth: '',
       endingMonth: '',
+      invalidStartingMonth: false,
+      invalidEndingMonth: false,
       sortField: '',
       sortDirection: '',
     }
@@ -264,6 +270,23 @@ export default Vue.extend({
         },
       })
     },
+    dateIsValid(dateStr: string) {
+      const regex = /^\d{4}-\d{2}$/
+
+      if (dateStr.match(regex) === null) {
+        return false
+      }
+
+      const date = new Date(dateStr)
+
+      const timestamp = date.getTime()
+
+      if (typeof timestamp !== 'number' || Number.isNaN(timestamp)) {
+        return false
+      }
+
+      return date.toISOString().startsWith(dateStr)
+    },
   },
   watch: {
     search() {
@@ -282,10 +305,29 @@ export default Vue.extend({
       this.applyFilters()
     },
     startingMonth() {
-      this.applyFilters()
+      if (this.dateIsValid(this.startingMonth)) {
+        this.invalidStartingMonth = false
+        this.applyFilters()
+      } else {
+        if (this.startingMonth) {
+          this.invalidStartingMonth = true
+        } else {
+          this.invalidStartingMonth = false
+        }
+      }
     },
     endingMonth() {
-      this.applyFilters()
+      if (this.dateIsValid(this.endingMonth)) {
+        this.invalidEndingMonth = false
+
+        this.applyFilters()
+      } else {
+        if (this.endingMonth) {
+          this.invalidEndingMonth = true
+        } else {
+          this.invalidEndingMonth = false
+        }
+      }
     },
   },
   apollo: {

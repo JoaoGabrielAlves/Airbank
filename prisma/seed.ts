@@ -86,6 +86,7 @@ function transactions() {
     .on('data', (data: Transaction) =>
       finalData.push({
         ...data,
+        date: new Date(data.date).toISOString(),
         categoryId: data.categoryId ? data.categoryId : null,
       })
     )

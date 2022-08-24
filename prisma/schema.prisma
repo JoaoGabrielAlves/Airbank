@@ -34,10 +34,9 @@ model Transaction {
   reference  String?
   amount     Decimal
   currency   String
-  date       String
+  date       DateTime
   Account    Account   @relation(fields: [accountId], references: [id])
   Category   Category? @relation(fields: [categoryId], references: [id])
 
-  @@index([categoryId, accountId])
-  @@index([reference, amount, currency, date])
+  @@index([reference, amount, currency, date,categoryId])
 }

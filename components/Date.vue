@@ -1,6 +1,6 @@
 <template>
   <span>
-    {{ formatDate(new Date(date)) }}
+    {{ formatDate(new Date(parseInt(date))) }}
   </span>
 </template>
 

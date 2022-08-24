@@ -18,12 +18,14 @@
         :placeholder="placeholder"
         :name="name"
         :id="name"
-        class="appearance-none rounded border border-gray-400 border-b block py-2 w-full bg-white text-sm placeholder-gray-400 text-gray-700 focus:bg-white focus:placeholder-gray-600 focus:text-gray-700 focus:outline-none"
+        class="appearance-none rounded block py-2 w-full bg-white text-sm placeholder-gray-400 text-gray-700 focus:bg-white focus:placeholder-gray-600 focus:text-gray-700 focus:outline-none"
         :class="{
           'pl-4': trailingIcon | !leadingIcon,
           'pr-10': trailingIcon,
           'pl-8': leadingIcon,
           'pr-6': leadingIcon | !trailingIcon,
+          'border border-b border-gray-400': !isInvalid,
+          'border-2 border-red-400': isInvalid,
         }"
       />
       <div
@@ -52,6 +54,7 @@ export default Vue.extend({
     disabled: Boolean,
     name: String,
     placeholder: String,
+    isInvalid: Boolean,
   },
   watch: {
     value() {
