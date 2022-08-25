@@ -110,20 +110,6 @@ export default Vue.extend({
         },
       })
     },
-    reloadTransaction() {
-      this.$apollo.queries.transactionById.fetchMore({
-        variables: {
-          search: this.categorySearch,
-        },
-
-        updateQuery: (
-          previousResult: Transaction,
-          fetchMoreResult: Transaction
-        ) => {
-          return fetchMoreResult
-        },
-      })
-    },
     updateTransactionCategory() {
       this.$apollo
         .mutate({
