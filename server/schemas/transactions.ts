@@ -244,19 +244,33 @@ function stringToFulltextSearch(string: string | undefined) {
 }
 
 function getDateSearch(search: string) {
-  const isValid =
-    moment(search, 'YYYY-MM-DD', true).isValid() ||
-    moment(search, 'DD/MM/YY', true).isValid()
+  const isValidYearMonthDay = moment(search, 'YYYY-MM-DD', true).isValid()
+  const isValidDayMonthYear = moment(search, 'DD/MM/YY', true).isValid()
 
-  if (!isValid) {
+  if (!isValidYearMonthDay && !isValidDayMonthYear) {
     return undefined
   }
 
-  const date = new Date(search)
+  if (isValidYearMonthDay) {
+    const startOfTheDay = moment(search, 'YYYY-MM-DD', true)
+      .startOf('D')
+      .toISOString()
 
-  const startOfTheDay = new Date(date.setUTCHours(0, 0, 0, 0)).toISOString()
+    const endOfTheDay = moment(search, 'YYYY-MM-DD', true)
+      .endOf('D')
+      .toISOString()
 
-  const endOfTheDay = new Date(date.setUTCHours(23, 59, 59, 999)).toISOString()
+    return {
+      gte: startOfTheDay,
+      lte: endOfTheDay,
+    }
+  }
+
+  const startOfTheDay = moment(search, 'DD/MM/YY', true)
+    .startOf('D')
+    .toISOString()
+
+  const endOfTheDay = moment(search, 'DD/MM/YY', true).endOf('D').toISOString()
 
   return {
     gte: startOfTheDay,
