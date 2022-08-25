@@ -2,8 +2,8 @@ import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
-const fs = require('fs')
-const csv = require('csv-parser')
+import fs from 'fs'
+import csvParser from 'csv-parser'
 
 interface Category {
   id: string
@@ -32,7 +32,7 @@ function categories() {
 
   fs.createReadStream(`${__dirname}/csvs/categories.csv`)
     .pipe(
-      csv({
+      csvParser({
         headers: ['id', 'name', 'color'],
         skipLines: 1,
       })
@@ -51,7 +51,7 @@ function accounts() {
 
   fs.createReadStream(`${__dirname}/csvs/accounts.csv`)
     .pipe(
-      csv({
+      csvParser({
         headers: ['id', 'name', 'bank'],
         skipLines: 1,
       })
@@ -70,7 +70,7 @@ function transactions() {
 
   fs.createReadStream(`${__dirname}/csvs/transactions.csv`)
     .pipe(
-      csv({
+      csvParser({
         headers: [
           'id',
           'accountId',

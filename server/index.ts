@@ -1,10 +1,10 @@
-const express = require('express')
-const { ApolloServer } = require('apollo-server-express')
-const cors = require('cors')
+import express from 'express'
+import cors from 'cors'
 
 import typeDefs from './typeDefs'
-
 import resolvers from './resolvers'
+
+import { ApolloServer } from 'apollo-server-express'
 import { context } from './context'
 
 const server = new ApolloServer({ typeDefs, resolvers, context })
