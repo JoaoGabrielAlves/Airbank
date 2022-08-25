@@ -228,6 +228,8 @@ export default Vue.extend({
       })
     },
     applyFilters() {
+      this.page = 1
+
       this.$apollo.queries.paginatedTransactions.fetchMore({
         variables: this.getPaginatedTransactionVariables(),
         updateQuery: (
