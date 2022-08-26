@@ -252,11 +252,13 @@ function getDateSearch(search: string) {
   }
 
   if (isValidYearMonthDay) {
-    const startOfTheDay = moment(search, 'YYYY-MM-DD', true)
+    const startOfTheDay = moment(search, 'YYYY-MM-DD')
+      .utc()
       .startOf('D')
       .toISOString()
 
-    const endOfTheDay = moment(search, 'YYYY-MM-DD', true)
+    const endOfTheDay = moment(search, 'YYYY-MM-DD')
+      .utc()
       .endOf('D')
       .toISOString()
 
@@ -266,11 +268,12 @@ function getDateSearch(search: string) {
     }
   }
 
-  const startOfTheDay = moment(search, 'DD/MM/YY', true)
+  const startOfTheDay = moment(search, 'DD/MM/YY')
+    .utc()
     .startOf('D')
     .toISOString()
 
-  const endOfTheDay = moment(search, 'DD/MM/YY', true).endOf('D').toISOString()
+  const endOfTheDay = moment(search, 'DD/MM/YY').utc().endOf('D').toISOString()
 
   return {
     gte: startOfTheDay,
@@ -289,19 +292,17 @@ function getDateFilter(
   let filter = {} as { gte: string; lte: string }
 
   if (startingMonth) {
-    filter.gte = new Date(startingMonth).toISOString()
+    filter.gte = moment(startingMonth, 'YYYY-MM', true)
+      .utc()
+      .startOf('M')
+      .toISOString()
   }
 
   if (endingMonth) {
-    let endDateBegningOfTheMonth = new Date(endingMonth)
-
-    let endDateEndOfTheMonth = new Date(
-      endDateBegningOfTheMonth.getFullYear(),
-      endDateBegningOfTheMonth.getMonth() + 2,
-      0
-    )
-
-    filter.lte = endDateEndOfTheMonth.toISOString()
+    filter.lte = moment(endingMonth, 'YYYY-MM', true)
+      .utc()
+      .endOf('M')
+      .toISOString()
   }
 
   return filter
