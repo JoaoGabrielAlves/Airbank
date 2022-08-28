@@ -64,8 +64,12 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import gql from 'graphql-tag'
-import { Account } from '../../../static/graphqlTypes'
+
+import { autocompleteCategory } from '~/graphql/categories/queries/autocompleteCategory'
+import { updateTransactionCategory } from '~/graphql/transactions/mutations/updateTransactionCategory'
+import { transactionById } from '~/graphql/transactions/queries/transactionById'
+
+import { Account } from '~/static/types/generated'
 
 export default Vue.extend({
   data() {
@@ -106,7 +110,7 @@ export default Vue.extend({
         },
 
         updateQuery: (
-          previousResult: Account,
+          _previousResult: Account,
           { fetchMoreResult }: { fetchMoreResult: Account }
         ) => {
           return fetchMoreResult
@@ -116,27 +120,7 @@ export default Vue.extend({
     updateTransactionCategory() {
       this.$apollo
         .mutate({
-          mutation: gql`
-            mutation ($transactionId: String!, $categoryName: String!) {
-              updateTransactionCategory(
-                transactionId: $transactionId
-                categoryName: $categoryName
-              ) {
-                reference
-                date
-                amount
-                currency
-                Category {
-                  name
-                  color
-                }
-                Account {
-                  name
-                  bank
-                }
-              }
-            }
-          `,
+          mutation: updateTransactionCategory,
           variables: {
             transactionId: this.transactionId,
             categoryName: this.selectedCategoryName,
@@ -152,24 +136,7 @@ export default Vue.extend({
   },
   apollo: {
     transactionById: {
-      query: gql`
-        query ($transactionId: String!) {
-          transactionById(id: $transactionId) {
-            reference
-            date
-            amount
-            currency
-            Category {
-              name
-              color
-            }
-            Account {
-              name
-              bank
-            }
-          }
-        }
-      `,
+      query: transactionById,
       variables() {
         let transactionId = this.transactionId
         return {
@@ -178,14 +145,7 @@ export default Vue.extend({
       },
     },
     autocompleteCategory: {
-      query: gql`
-        query ($search: String) {
-          autocompleteCategory(search: $search) {
-            id
-            name
-          }
-        }
-      `,
+      query: autocompleteCategory,
       variables: {
         search: '',
       },

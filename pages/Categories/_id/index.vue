@@ -16,7 +16,8 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import gql from 'graphql-tag'
+
+import { categoryById } from '~/graphql/categories/queries/categoryById'
 
 export default Vue.extend({
   data() {
@@ -38,14 +39,7 @@ export default Vue.extend({
   },
   apollo: {
     categoryById: {
-      query: gql`
-        query ($categoryId: String!) {
-          categoryById(id: $categoryId) {
-            name
-            color
-          }
-        }
-      `,
+      query: categoryById,
       variables() {
         let categoryId = this.categoryId
         return {

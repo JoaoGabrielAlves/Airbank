@@ -13,7 +13,8 @@
     "lint:prettier": "prettier --check .",
     "lint": "npm run lint:prettier",
     "lintfix": "prettier --write --list-different .",
-    "test": "jest"
+    "test": "jest",
+    "graphql/codegen": "graphql-codegen --config codegen.yml"
   },
   "dependencies": {
     "@nuxtjs/apollo": "^4.0.1-rc.5",
@@ -22,6 +23,7 @@
     "apollo-server-express": "^2.26.0",
     "core-js": "^3.19.3",
     "csv-parser": "^3.0.0",
+    "graphql": "^15.8.0",
     "graphql-tag": "^2.12.6",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
@@ -32,6 +34,9 @@
     "webpack": "^4.46.0"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "2.11.8",
+    "@graphql-codegen/typescript": "2.7.3",
+    "@graphql-codegen/typescript-operations": "2.5.3",
     "@nuxt/types": "^2.15.8",
     "@nuxt/typescript-build": "^2.1.0",
     "@nuxtjs/tailwindcss": "^4.2.1",

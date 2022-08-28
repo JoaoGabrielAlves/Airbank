@@ -33,7 +33,9 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import gql from 'graphql-tag'
+import { accountsCount } from '~/graphql/accounts/queries/accountsCount'
+import { categoriesCount } from '~/graphql/categories/queries/categoriesCount'
+import { transactionsCount } from '~/graphql/transactions/queries/transactionsCount'
 
 export default Vue.extend({
   head() {
@@ -49,27 +51,9 @@ export default Vue.extend({
     }
   },
   apollo: {
-    accountsCount: gql`
-      query {
-        accountsCount {
-          _all
-        }
-      }
-    `,
-    categoriesCount: gql`
-      query {
-        categoriesCount {
-          _all
-        }
-      }
-    `,
-    transactionsCount: gql`
-      query {
-        transactionsCount {
-          _all
-        }
-      }
-    `,
+    accountsCount: accountsCount,
+    categoriesCount: categoriesCount,
+    transactionsCount: transactionsCount,
   },
 })
 </script>

@@ -1,16 +1,21 @@
 import { gql } from 'apollo-server-express'
 import { Context } from '../context'
+import {
+  QueryAutocompleteAccountBanksArgs,
+  QueryPaginatedAccountsArgs,
+  QueryAccountByIdArgs,
+} from '../../static/types/generated'
 
 export const typeDef = gql`
   extend type Query {
     paginatedAccounts(
-      take: Int
+      take: Int!
       page: Int!
       sortField: String
       sortDirection: String
     ): AccountResponse
 
-    autocompleteAccountBanks(search: String): [Account]
+    autocompleteAccountBanks(search: String!): [Account]
 
     accountsCount: Count
 
@@ -37,26 +42,21 @@ export const resolvers = {
   Query: {
     paginatedAccounts: async (
       _parent: Object,
-      _args: {
-        take: number
-        page: number
-        sortField: 'name' | 'bank'
-        sortDirection: 'asc' | 'desc'
-      },
+      args: QueryPaginatedAccountsArgs,
       context: Context
     ) => {
       let queryResults = null
 
-      const orderBy = _args.sortField
+      const orderBy = args.sortField
         ? {
-            [_args.sortField]: _args.sortDirection,
+            [args.sortField]: args.sortDirection,
           }
         : undefined
 
-      const skip = _args.take * (_args.page - 1)
+      const skip = args.take * (args.page - 1)
 
       queryResults = await context.prisma.account.findMany({
-        take: _args.take,
+        take: args.take,
         skip: skip,
         orderBy: orderBy,
       })
@@ -66,7 +66,7 @@ export const resolvers = {
 
         const result = {
           pageInfo: {
-            hasNextPage: accountsCount > skip + _args.take,
+            hasNextPage: accountsCount > skip + args.take,
           },
 
           edges: queryResults.map((account) => ({
@@ -95,17 +95,13 @@ export const resolvers = {
     },
     autocompleteAccountBanks: async (
       _parent: Object,
-      _args: { search: string },
+      args: QueryAutocompleteAccountBanksArgs,
       context: Context
     ) => {
-      if (!_args.search) {
-        return []
-      }
-
       return context.prisma.account.findMany({
         where: {
           bank: {
-            startsWith: _args.search,
+            startsWith: args.search,
             mode: 'insensitive',
           },
         },
@@ -114,12 +110,12 @@ export const resolvers = {
     },
     accountById: async (
       _parent: Object,
-      _args: { id: string },
+      args: QueryAccountByIdArgs,
       context: Context
     ) => {
       return await context.prisma.account.findUnique({
         where: {
-          id: _args.id,
+          id: args.id,
         },
       })
     },

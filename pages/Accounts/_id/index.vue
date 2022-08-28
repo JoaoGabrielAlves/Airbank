@@ -11,7 +11,8 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import gql from 'graphql-tag'
+
+import { accountById } from '~/graphql/accounts/queries/accountById'
 
 export default Vue.extend({
   data() {
@@ -33,14 +34,7 @@ export default Vue.extend({
   },
   apollo: {
     accountById: {
-      query: gql`
-        query ($accountId: String!) {
-          accountById(id: $accountId) {
-            name
-            bank
-          }
-        }
-      `,
+      query: accountById,
       variables() {
         let accountId = this.accountId
         return {

@@ -50,7 +50,8 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import gql from 'graphql-tag'
+
+import { paginatedAccounts } from '~/graphql/accounts/queries/paginatedAccounts'
 
 export default Vue.extend({
   head() {
@@ -72,32 +73,7 @@ export default Vue.extend({
   }),
   apollo: {
     paginatedAccounts: {
-      query: gql`
-        query (
-          $take: Int
-          $page: Int!
-          $sortField: String
-          $sortDirection: String
-        ) {
-          paginatedAccounts(
-            take: $take
-            page: $page
-            sortField: $sortField
-            sortDirection: $sortDirection
-          ) {
-            pageInfo {
-              hasNextPage
-            }
-            edges {
-              node {
-                id
-                name
-                bank
-              }
-            }
-          }
-        }
-      `,
+      query: paginatedAccounts,
       variables: {
         take: 10,
         page: 1,
@@ -135,7 +111,7 @@ export default Vue.extend({
           sortField: this.sortField,
           sortDirection: this.sortDirection,
         },
-        updateQuery: (previousResult, { fetchMoreResult }) => {
+        updateQuery: (_previousResult, { fetchMoreResult }) => {
           return fetchMoreResult
         },
       })

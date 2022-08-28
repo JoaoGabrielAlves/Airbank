@@ -43,8 +43,10 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import gql from 'graphql-tag'
-import { CategoryPaginatedResponse } from '../../static/graphqlTypes'
+
+import { CategoryEdge } from '~/static/types/generated'
+
+import { paginatedCategories } from '~/graphql/categories/queries/paginatedCategories'
 
 export default Vue.extend({
   head() {
@@ -68,32 +70,7 @@ export default Vue.extend({
   },
   apollo: {
     paginatedCategories: {
-      query: gql`
-        query (
-          $take: Int
-          $page: Int!
-          $sortField: String
-          $sortDirection: String
-        ) {
-          paginatedCategories(
-            take: $take
-            page: $page
-            sortField: $sortField
-            sortDirection: $sortDirection
-          ) {
-            pageInfo {
-              hasNextPage
-            }
-            edges {
-              node {
-                id
-                name
-                color
-              }
-            }
-          }
-        }
-      `,
+      query: paginatedCategories,
       variables: {
         take: 10,
         page: 1,
@@ -114,8 +91,20 @@ export default Vue.extend({
         },
 
         updateQuery: (
-          previousResult: CategoryPaginatedResponse,
-          { fetchMoreResult }: { fetchMoreResult: CategoryPaginatedResponse }
+          previousResult: {
+            paginatedCategories: {
+              edges: Array<CategoryEdge>
+            }
+          },
+          {
+            fetchMoreResult,
+          }: {
+            fetchMoreResult: {
+              paginatedCategories: {
+                edges: Array<CategoryEdge>
+              }
+            }
+          }
         ) => {
           fetchMoreResult.paginatedCategories.edges = [
             ...previousResult.paginatedCategories.edges,
@@ -138,8 +127,20 @@ export default Vue.extend({
         },
 
         updateQuery: (
-          previousResult: CategoryPaginatedResponse,
-          { fetchMoreResult }: { fetchMoreResult: CategoryPaginatedResponse }
+          _previousResult: {
+            paginatedCategories: {
+              edges: Array<CategoryEdge>
+            }
+          },
+          {
+            fetchMoreResult,
+          }: {
+            fetchMoreResult: {
+              paginatedCategories: {
+                edges: Array<CategoryEdge>
+              }
+            }
+          }
         ) => {
           return fetchMoreResult
         },

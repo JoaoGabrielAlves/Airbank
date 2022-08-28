@@ -1,16 +1,21 @@
 import { gql } from 'apollo-server-express'
 import { Context } from '../context'
+import {
+  QueryAutocompleteCategoryArgs,
+  QueryPaginatedCategoriesArgs,
+  QueryCategoryByIdArgs,
+} from '../../static/types/generated'
 
 export const typeDef = gql`
   extend type Query {
     paginatedCategories(
-      take: Int
+      take: Int!
       page: Int!
       sortField: String
       sortDirection: String
     ): CategoryResponse
 
-    autocompleteCategory(search: String): [Category]
+    autocompleteCategory(search: String!): [Category]
 
     categoriesCount: Count
 
@@ -37,26 +42,21 @@ export const resolvers = {
   Query: {
     paginatedCategories: async (
       _parent: Object,
-      _args: {
-        take: number
-        page: number
-        sortField: 'name'
-        sortDirection: 'asc' | 'desc'
-      },
+      args: QueryPaginatedCategoriesArgs,
       context: Context
     ) => {
       let queryResults = null
 
-      const orderBy = _args.sortField
+      const orderBy = args.sortField
         ? {
-            [_args.sortField]: _args.sortDirection,
+            [args.sortField]: args.sortDirection,
           }
         : undefined
 
-      const skip = _args.take * (_args.page - 1)
+      const skip = args.take * (args.page - 1)
 
       queryResults = await context.prisma.category.findMany({
-        take: _args.take,
+        take: args.take,
         skip: skip,
         orderBy: orderBy,
       })
@@ -66,7 +66,7 @@ export const resolvers = {
 
         const result = {
           pageInfo: {
-            hasNextPage: categoriesCount > skip + _args.take,
+            hasNextPage: categoriesCount > skip + args.take,
           },
 
           edges: queryResults.map((category) => ({
@@ -95,17 +95,13 @@ export const resolvers = {
     },
     autocompleteCategory: async (
       _parent: Object,
-      _args: { search: string },
+      args: QueryAutocompleteCategoryArgs,
       context: Context
     ) => {
-      if (!_args.search) {
-        return []
-      }
-
       return context.prisma.category.findMany({
         where: {
           name: {
-            startsWith: _args.search,
+            startsWith: args.search,
             mode: 'insensitive',
           },
         },
@@ -113,12 +109,12 @@ export const resolvers = {
     },
     categoryById: async (
       _parent: Object,
-      _args: { id: string },
+      args: QueryCategoryByIdArgs,
       context: Context
     ) => {
       return await context.prisma.category.findUnique({
         where: {
-          id: _args.id,
+          id: args.id,
         },
       })
     },

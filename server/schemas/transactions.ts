@@ -3,11 +3,17 @@ import { Context } from '../context'
 import { randomUUID } from 'crypto'
 import { Prisma } from '@prisma/client'
 import moment from 'moment'
+import {
+  QueryPaginatedTransactionsArgs,
+  QueryTransactionByIdArgs,
+  UpdateTransactionCategoryMutationVariables,
+  InputMaybe,
+} from '../../static/types/generated'
 
 export const typeDef = gql`
   extend type Query {
     paginatedTransactions(
-      take: Int
+      take: Int!
       page: Int
       skip: String
       search: String
@@ -52,27 +58,14 @@ export const typeDef = gql`
   }
 `
 
-type paginatedTransactionsArgs = {
-  take: number
-  skip: string
-  page: number
-  search: string
-  bank: string
-  categoryId: string
-  startingMonth: string
-  endingMonth: string
-  sortField: 'date' | 'amount'
-  sortDirection: 'asc' | 'desc'
-}
-
 export const resolvers = {
   Query: {
     paginatedTransactions: async (
       _parent: Object,
-      _args: paginatedTransactionsArgs,
+      args: QueryPaginatedTransactionsArgs,
       context: Context
     ) => {
-      const search = filterString(_args.search)
+      const search = filterString(args.search)
 
       const fullTextSearch = stringToFulltextSearch(search)
 
@@ -120,13 +113,13 @@ export const resolvers = {
           ]
         : undefined
 
-      const categoryId = filterString(_args.categoryId)
+      const categoryId = filterString(args.categoryId)
 
-      const bank = filterString(_args.bank)
+      const bank = filterString(args.bank)
 
-      const startingMonth = filterString(_args.startingMonth)
+      const startingMonth = filterString(args.startingMonth)
 
-      const endingMonth = filterString(_args.endingMonth)
+      const endingMonth = filterString(args.endingMonth)
 
       const hasFilter =
         !!categoryId || !!bank || !!startingMonth || !!endingMonth
@@ -152,11 +145,11 @@ export const resolvers = {
         AND: filterQuery,
       }
 
-      if (_args.page) {
-        return offsetPaginate(_args, context, whereQuery)
+      if (args.page) {
+        return offsetPaginate(args, context, whereQuery)
       }
 
-      return cursorPaginate(_args, context, whereQuery)
+      return cursorPaginate(args, context, whereQuery)
     },
     transactionsCount: async (_parent: Object, _args: {}, context: Context) => {
       return await context.prisma.transaction.count({
@@ -167,12 +160,12 @@ export const resolvers = {
     },
     transactionById: async (
       _parent: Object,
-      _args: { id: string },
+      args: QueryTransactionByIdArgs,
       context: Context
     ) => {
       return await context.prisma.transaction.findUnique({
         where: {
-          id: _args.id,
+          id: args.id,
         },
         include: {
           Category: true,
@@ -184,26 +177,26 @@ export const resolvers = {
   Mutation: {
     updateTransactionCategory: async (
       _parent: Object,
-      _args: { transactionId: string; categoryName: string },
+      args: UpdateTransactionCategoryMutationVariables,
       context: Context
     ) => {
       let randomColor = Math.floor(Math.random() * 16777215).toString(16)
 
       const category = await context.prisma.category.upsert({
         where: {
-          name: _args.categoryName,
+          name: args.categoryName,
         },
         update: {},
         create: {
           id: randomUUID(),
-          name: _args.categoryName,
+          name: args.categoryName,
           color: randomColor,
         },
       })
 
       return await context.prisma.transaction.update({
         where: {
-          id: _args.transactionId,
+          id: args.transactionId,
         },
         data: {
           categoryId: category.id,
@@ -217,7 +210,11 @@ export const resolvers = {
   },
 }
 
-function filterString(string: string) {
+function filterString(string: InputMaybe<string> | undefined) {
+  if (typeof string === 'undefined') {
+    return undefined
+  }
+
   return string != '' ? string : undefined
 }
 
@@ -231,7 +228,7 @@ function filterStringToFloat(string: string) {
   return undefined
 }
 
-function stringToFulltextSearch(string: string | undefined) {
+function stringToFulltextSearch(string: InputMaybe<string> | undefined) {
   const tsQuerySpecialChars = /[()|&:*!]/g
 
   return string
@@ -282,8 +279,8 @@ function getDateSearch(search: string) {
 }
 
 function getDateFilter(
-  startingMonth: string | undefined,
-  endingMonth: string | undefined
+  startingMonth: InputMaybe<string> | undefined,
+  endingMonth: InputMaybe<string> | undefined
 ) {
   if (!startingMonth && !endingMonth) {
     return undefined
@@ -309,24 +306,24 @@ function getDateFilter(
 }
 
 async function offsetPaginate(
-  _args: paginatedTransactionsArgs,
+  args: QueryPaginatedTransactionsArgs,
   context: Context,
   whereQuery: Prisma.TransactionWhereInput
 ) {
   let queryResults = null
 
-  const skip = _args.take * (_args.page - 1)
+  const skip = args.take * ((args.page ?? 1) - 1)
 
   queryResults = await context.prisma.transaction.findMany({
-    take: _args.take,
+    take: args.take,
     skip: skip,
     include: {
       Category: true,
     },
     where: whereQuery,
-    orderBy: _args.sortField
+    orderBy: args.sortField
       ? {
-          [_args.sortField]: _args.sortDirection,
+          [args.sortField]: args.sortDirection,
         }
       : {
           id: 'asc',
@@ -340,7 +337,7 @@ async function offsetPaginate(
 
     const result = {
       pageInfo: {
-        hasNextPage: transactionCount > skip + _args.take,
+        hasNextPage: transactionCount > skip + args.take,
       },
 
       edges: queryResults.map((transaction) => ({
@@ -362,21 +359,21 @@ async function offsetPaginate(
 }
 
 async function cursorPaginate(
-  _args: paginatedTransactionsArgs,
+  args: QueryPaginatedTransactionsArgs,
   context: Context,
   whereQuery: Prisma.TransactionWhereInput
 ) {
   let queryResults = null
 
   queryResults = await context.prisma.transaction.findMany({
-    take: _args.take,
-    skip: _args.skip ? 1 : undefined,
+    take: args.take,
+    skip: args.skip ? 1 : undefined,
     include: {
       Category: true,
     },
-    cursor: _args.skip
+    cursor: args.skip
       ? {
-          id: _args.skip,
+          id: args.skip,
         }
       : undefined,
     where: whereQuery,
@@ -391,7 +388,7 @@ async function cursorPaginate(
     const endCursor = lastTransactionInResults.id
 
     const secondQueryCount = await context.prisma.transaction.count({
-      take: _args.take,
+      take: args.take,
       cursor: {
         id: endCursor,
       },
@@ -404,7 +401,7 @@ async function cursorPaginate(
     const result = {
       pageInfo: {
         endCursor: endCursor,
-        hasNextPage: secondQueryCount >= _args.take,
+        hasNextPage: secondQueryCount >= args.take,
       },
 
       edges: queryResults.map((transaction) => ({

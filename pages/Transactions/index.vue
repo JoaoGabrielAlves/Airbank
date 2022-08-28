@@ -161,12 +161,18 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import gql from 'graphql-tag'
+
+import { autocompleteAccountBanks } from '~/graphql/accounts/queries/autocompleteAccountBanks'
+import { paginatedTransactions } from '~/graphql/transactions/queries/paginatedTransactions'
+import { autocompleteCategory } from '~/graphql/categories/queries/autocompleteCategory'
+
 import {
-  TransactionPaginatedReponse,
   Account,
   Category,
-} from '../../static/graphqlTypes'
+  TransactionResponse,
+  TransactionEdge,
+  QueryPaginatedTransactionsArgs,
+} from '~/static/types/generated'
 
 const dateRegex = /^\d{4}-\d{2}-\d{2}$/
 
@@ -216,8 +222,20 @@ export default Vue.extend({
         variables: this.getPaginatedTransactionVariables(endCursor),
 
         updateQuery: (
-          previousResult: TransactionPaginatedReponse,
-          { fetchMoreResult }: { fetchMoreResult: TransactionPaginatedReponse }
+          previousResult: {
+            paginatedTransactions: {
+              edges: Array<TransactionEdge>
+            }
+          },
+          {
+            fetchMoreResult,
+          }: {
+            fetchMoreResult: {
+              paginatedTransactions: {
+                edges: Array<TransactionEdge>
+              }
+            }
+          }
         ) => {
           fetchMoreResult.paginatedTransactions.edges = [
             ...previousResult.paginatedTransactions.edges,
@@ -233,8 +251,8 @@ export default Vue.extend({
       this.$apollo.queries.paginatedTransactions.fetchMore({
         variables: this.getPaginatedTransactionVariables(),
         updateQuery: (
-          previousResult: TransactionPaginatedReponse,
-          { fetchMoreResult }: { fetchMoreResult: TransactionPaginatedReponse }
+          _previousResult: TransactionResponse,
+          { fetchMoreResult }: { fetchMoreResult: TransactionResponse }
         ) => {
           return fetchMoreResult
         },
@@ -247,7 +265,7 @@ export default Vue.extend({
         },
 
         updateQuery: (
-          previousResult: Array<Account>,
+          _previousResult: Array<Account>,
           { fetchMoreResult }: { fetchMoreResult: Array<Account> }
         ) => {
           return fetchMoreResult
@@ -261,7 +279,7 @@ export default Vue.extend({
         },
 
         updateQuery: (
-          previousResult: Array<Category>,
+          _previousResult: Array<Category>,
           { fetchMoreResult }: { fetchMoreResult: Array<Category> }
         ) => {
           return fetchMoreResult
@@ -294,17 +312,7 @@ export default Vue.extend({
         endingMonth: this.endingMonth,
         sortField: this.sortField,
         sortDirection: this.sortDirection,
-      } as {
-        page: number
-        skip: string
-        search: string
-        bank: string
-        categoryId: string
-        startingMonth: string
-        endingMonth: string
-        sortField: string
-        sortDirection: string
-      }
+      } as QueryPaginatedTransactionsArgs
 
       if (endCursor) {
         variables.skip = endCursor
@@ -361,78 +369,20 @@ export default Vue.extend({
   },
   apollo: {
     paginatedTransactions: {
-      query: gql`
-        query (
-          $take: Int
-          $page: Int
-          $skip: String
-          $search: String
-          $bank: String
-          $categoryId: String
-          $startingMonth: String
-          $endingMonth: String
-          $sortField: String
-          $sortDirection: String
-        ) {
-          paginatedTransactions(
-            take: $take
-            page: $page
-            skip: $skip
-            search: $search
-            bank: $bank
-            categoryId: $categoryId
-            startingMonth: $startingMonth
-            endingMonth: $endingMonth
-            sortField: $sortField
-            sortDirection: $sortDirection
-          ) {
-            pageInfo {
-              endCursor
-              hasNextPage
-            }
-            edges {
-              cursor
-              node {
-                id
-                reference
-                date
-                amount
-                currency
-                Category {
-                  name
-                  color
-                }
-              }
-            }
-          }
-        }
-      `,
+      query: paginatedTransactions,
       variables: {
         take: 10,
         search: '',
       },
     },
     autocompleteAccountBanks: {
-      query: gql`
-        query ($search: String) {
-          autocompleteAccountBanks(search: $search) {
-            bank
-          }
-        }
-      `,
+      query: autocompleteAccountBanks,
       variables: {
         search: '',
       },
     },
     autocompleteCategory: {
-      query: gql`
-        query ($search: String) {
-          autocompleteCategory(search: $search) {
-            id
-            name
-          }
-        }
-      `,
+      query: autocompleteCategory,
       variables: {
         search: '',
       },
