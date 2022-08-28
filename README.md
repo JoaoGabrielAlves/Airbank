@@ -34,10 +34,7 @@ After configuring your local environment, you can run those commands in order to
 $ npm install
 
 # set up database
-$ npx prisma db push
-
-# seed database
-$ npx prima db seed
+$ npm run setup:database
 
 # start serve with hot reload at localhost:3000
 $ npm run dev
