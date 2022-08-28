@@ -21,7 +21,7 @@ To setup this project you will need to have PostgreSQL and Node set up
 in your machine. Before running any commands on your terminal prisma
 needs you to specify a PostgreSQL connection url. In this project you will need to
 create a .env file and put your connection url on DATABASE_URL like in
-the example bellow. You can find more about PostgreSQL connection ulrs on prima [documentation](https://www.prisma.io/docs/reference/database-reference/connection-urls)
+the example bellow. You can find more about PostgreSQL connection ulrs on prima [documentation](https://www.prisma.io/docs/concepts/database-connectors/postgresql)
 
 ```
 DATABASE_URL="postgresql://postgres:password@localhost:5432/airbank"
