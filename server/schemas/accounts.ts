@@ -98,6 +98,10 @@ export const resolvers = {
       args: QueryAutocompleteAccountBanksArgs,
       context: Context
     ) => {
+      if (!args.search) {
+        return []
+      }
+
       return context.prisma.account.findMany({
         where: {
           bank: {

@@ -98,6 +98,10 @@ export const resolvers = {
       args: QueryAutocompleteCategoryArgs,
       context: Context
     ) => {
+      if (!args.search) {
+        return []
+      }
+
       return context.prisma.category.findMany({
         where: {
           name: {

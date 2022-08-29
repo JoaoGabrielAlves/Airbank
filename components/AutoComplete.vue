@@ -19,6 +19,7 @@
         aria-controls="options"
         aria-expanded="false"
         @keydown="onKeydown"
+        autocomplete="off"
       />
       <button
         type="button"
