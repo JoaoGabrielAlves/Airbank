@@ -31,7 +31,7 @@
     </div>
     <div class="flex justify-center items-center py-12" v-else>
       <span v-if="isLoading"> Loading... </span>
-      <span v-else> No data found using those filters </span>
+      <span v-else> No data available </span>
     </div>
   </div>
 </template>
